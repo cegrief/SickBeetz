@@ -1,4 +1,4 @@
-import pyaudio
+# import pyaudio
 import wave
 import platform
 import os
