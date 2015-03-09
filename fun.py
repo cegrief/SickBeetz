@@ -1,4 +1,4 @@
-# import pyaudio
+import pyaudio
 import wave
 import platform
 import os
@@ -68,7 +68,7 @@ class Fun:
         CHUNK = 1024
         SILENCE_LIMIT = 0.5
         PREV_AUDIO = 0.5
-        THRESHOLD = 300
+        THRESHOLD = 800
         p = pyaudio.PyAudio()
         stream = p.open(format=FORMAT,
                         channels=CHANNELS,
