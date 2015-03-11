@@ -1,11 +1,3 @@
-### Experimenting with KNN for n-dimensional arrays
-
-from sklearn.metrics import classification_report, confusion_matrix
-from sklearn.neighbors import KNeighborsClassifier
-import librosa
-import os
-import numpy as np
-import matplotlib.pyplot as plt
 import audioop
 import pyaudio
 from collections import deque
