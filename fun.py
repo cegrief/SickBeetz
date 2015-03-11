@@ -16,6 +16,7 @@ import IPython.display
 
 
 class Fun:
+
     def __init__(self):
 
         self.start_stream()
