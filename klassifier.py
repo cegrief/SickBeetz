@@ -7,6 +7,9 @@ import os
 import numpy as np
 import matplotlib.pyplot as plt
 
+training_mfccs = [0, 1, 2, 4, 5]
+num_mfccs = 20
+
 
 def train_classifier(data, labels):
     model = KNeighborsClassifier()
@@ -63,7 +66,7 @@ def get_mfcc(filename, sr, plot=False):
     y, sr = librosa.load(filename, sr)
     S = librosa.feature.melspectrogram(y, sr=sr, n_fft=2048, hop_length=64, n_mels=128)
     log_S = librosa.logamplitude(S, ref_power=np.max)
-    mfcc = librosa.feature.mfcc(S=log_S, n_mfcc=20)
+    mfcc = librosa.feature.mfcc(S=log_S, n_mfcc=num_mfccs)
 
     if plot:
         plt.figure(figsize=(12,4))
@@ -82,7 +85,13 @@ def get_mfcc(filename, sr, plot=False):
 
 
 def get_feature_from_mfcc(mfcc):
-    return np.sum(mfcc, axis=1)
+    result = []
+    for i in range(len(training_mfccs)):
+        mfcc_i = mfcc[training_mfccs[i]]
+        len_mfcc_i = np.size(mfcc_i)
+        result.append(np.average(mfcc_i[0:len_mfcc_i/5]))
+        result.append(np.average(mfcc_i[len_mfcc_i/5:]))
+    return result
 
 
 if __name__ == "__main__":

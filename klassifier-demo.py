@@ -4,6 +4,7 @@ from collections import deque
 import math
 import time
 import wave
+import numpy as np
 
 import klassifier
 
@@ -15,7 +16,6 @@ def main():
     new_sample = listen_for_speech()
     play_wav(new_sample)
     new_features = klassifier.get_feature_from_mfcc(klassifier.get_mfcc(new_sample, 44100))
-    print new_features
     klassifier.use_classifier(model, new_features)
 
 
@@ -31,9 +31,11 @@ def get_sound_threshold():
                     rate=RATE,
                     input=True,
                     frames_per_buffer=CHUNK)
-    cur_data = stream.read(CHUNK)
-    result = math.sqrt(abs(audioop.avg(cur_data, 4)))
-    return result*4
+    total_data = []
+    for i in range(10):
+        cur_data = stream.read(CHUNK)
+        total_data.append(math.sqrt(abs(audioop.avg(cur_data, 4))))
+    return np.mean(total_data)*4
 
 
 def listen_for_speech():
@@ -41,7 +43,7 @@ def listen_for_speech():
     CHANNELS = 1
     RATE = 44100
     CHUNK = 1024
-    SILENCE_LIMIT = 0.2
+    SILENCE_LIMIT = 0.1
     PREV_AUDIO = 0.2
     THRESHOLD = get_sound_threshold()
     p = pyaudio.PyAudio()
