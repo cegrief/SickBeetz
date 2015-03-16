@@ -4,7 +4,9 @@ import librosa
 import sys
 import matplotlib.pyplot as plt
 import numpy as np
+import math
 HOP_LENGTH = 256
+SILENCE_THRESHOLD = .5
 
 
 def segment_audio(signal, sr):
@@ -17,12 +19,25 @@ def segment_audio(signal, sr):
     for i in range(0, len(onset_times)):
         segment_start = onset_times[i]*sr
         if i != len(onset_times)-1:
-            segment_end = (onset_times[i+1]*sr)-1
+            segment_end = find_segment_end(segment_start, (onset_times[i+1]*sr)-1, signal)
         else:
-            segment_end = len(signal)-1
+            segment_end = find_segment_end(segment_start, len(signal)-1, signal)
+        print segment_start
+        print segment_end
         segments.append(signal[segment_start: segment_end])
     return segments, onset_times
 
+
+def find_segment_end(st, n, signal):
+    for i in xrange(int(st), int(n), HOP_LENGTH):
+        if rms(signal[i:n]) < SILENCE_THRESHOLD:
+            return i
+    return n
+
+
+def rms(y):
+    x = sum([i**2 for i in y])
+    return math.sqrt(x)
 
 def main(argv):
 
