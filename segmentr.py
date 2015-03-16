@@ -13,7 +13,7 @@ SILENCE_THRESHOLD = .5
 
 def segment_audio(signal, sr):
 
-    o_env = librosa.onset.onset_strength(y=signal, sr=sr, centering=False, hop_length=HOP_LENGTH)
+    o_env = librosa.onset.onset_strength(y=signal[1000:len(signal)-1000], sr=sr, centering=False, hop_length=HOP_LENGTH)
     onset_frames = librosa.onset.onset_detect(onset_envelope=o_env, sr=sr, hop_length=HOP_LENGTH)
     onset_times = librosa.frames_to_time(onset_frames, sr=sr, hop_length=HOP_LENGTH)
 
@@ -24,7 +24,8 @@ def segment_audio(signal, sr):
             segment_end = find_segment_end(segment_start, (onset_times[i+1]*sr)-1, signal)
         else:
             segment_end = find_segment_end(segment_start, len(signal)-1, signal)
-        segments.append(signal[segment_start: segment_end])
+        if segment_end - segment_start >= 512:
+            segments.append(signal[segment_start: segment_end])
     return segments, onset_times
 
 
