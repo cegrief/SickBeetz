@@ -14,9 +14,12 @@ def main(argv):
     y, sr = librosa.load(path, sr=None)
     segments, times = segmentr.segment_audio(y, sr)
 
+    # build the KNN classifier
+    model = klassifier.load_classifier()
+
     replacements = []
     for i in segments:
-        #replacements.append(klassifier.klassify_segment(i))
+        replacements.append(klassifier.use_classifier(model, i))
         #just do kit_1 ts.wav for now
         sy, ssr = librosa.load('kits/kit_1/ts.wav', sr=None)
         replacements.append((sy, ssr))
