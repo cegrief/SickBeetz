@@ -15,19 +15,22 @@ def train_classifier(data, labels):
     model = KNeighborsClassifier()
     model.fit(data, labels)
 
-    expected = labels
-    predicted = model.predict(data)
-
-    print classification_report(expected, predicted)
-    print confusion_matrix(expected, predicted)
+    # expected = labels
+    # predicted = model.predict(data)
+    #
+    # print classification_report(expected, predicted)
+    # print confusion_matrix(expected, predicted)
 
     return model
 
 
-def use_classifier(classifier, sample):
-    p = classifier.predict(sample)
-    print "Sample: %s\nPrediction: %s" % (sample, p)
-    return
+def use_classifier(classifier, seg, kit):
+    print "making a file seg"
+    librosa.output.write_wav('seg.wav', seg, 44100)
+    p = classifier.predict(get_feature_from_mfcc(get_mfcc('seg.wav', 44100)))
+    os.remove('seg.wav')
+    # print "Sample: %s\nPrediction: %s" % (seg, p)
+    return librosa.load('kits/'+kit+'/'+p[0]+'.wav', sr=None)
 
 
 def main():
@@ -54,7 +57,6 @@ def load_classifier():
 def load_samples():
     current_dir = os.path.dirname(os.path.realpath(__file__))
     samples = {}
-    # TODO: Fix file loading pathname bug
     for inst in ['b', 'ts', 'c']:
         foo = os.path.join(current_dir, 'samples', inst)
         samples[inst] = [os.path.abspath('samples/'+inst+'/'+f)
