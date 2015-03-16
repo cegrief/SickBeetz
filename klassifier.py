@@ -25,7 +25,6 @@ def train_classifier(data, labels):
 
 
 def use_classifier(classifier, seg, kit):
-    print "making a file seg"
     librosa.output.write_wav('seg.wav', seg, 44100)
     p = classifier.predict(get_feature_from_mfcc(get_mfcc('seg.wav', 44100)))
     os.remove('seg.wav')

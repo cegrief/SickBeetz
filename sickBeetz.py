@@ -23,7 +23,6 @@ class Example(Frame):
     
 
     def onClick(self, text, kit):
-        print kit
         self.second_state()
         self.update()
         if text:
