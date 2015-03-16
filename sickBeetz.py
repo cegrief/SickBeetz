@@ -8,6 +8,8 @@ from Tkinter import Tk, Frame, BOTH
 import ttk
 import platform
 from tkFileDialog import askopenfilename
+import subprocess
+
 
 class Example(Frame):
 
@@ -20,37 +22,30 @@ class Example(Frame):
         self.first_state()
     
 
-    def onClick(self, text):
-    #     if len(argv) > 1 and argv[1] in ['kit_1', 'kit_2', 'kit_3']:
-    #     kit = argv[1]
-    # else:
-    #     print 'Incorrect drum kit arg format; assuming \'kit_1\''
-    #     kit = 'kit_1'
-    # print path
-    # y, sr = librosa.load(path, sr=None)
-    # segments, times = segmentr.segment_audio(y, sr)
+    def onClick(self, text, kit):
+        print kit
         self.second_state()
         self.update()
         if text:
             path = text
         else:
             path = 'samples/segmenter-tests/test1.wav'
-    # build the KNN classifier
-    # model = klassifier.load_classifier()
-    # replacements = []
-    # ssr = 0
-    # for seg in segments:
-    #     sy, ssr = klassifier.use_classifier(model, seg, kit)
-    #     replacements.append(sy)
+
+        if kit:
+            thekit = kit
+        else:
+            thekit = 'kit_2'
 
         y, sr = librosa.load(path, sr=None)
         segments, times = segmentr.segment_audio(y, sr)
 
+
+        # build the KNN classifier
+        model = klassifier.load_classifier()
         replacements = []
-        for i in segments:
-            #replacements.append(klassifier.klassify_segment(i))
-            #just do kit_1 ts.wav for now
-            sy, ssr = librosa.load('kits/kit_1/ts.wav', sr=None)
+        ssr = 0
+        for seg in segments:
+            sy, ssr = klassifier.use_classifier(model, seg, thekit)
             replacements.append(sy)
 
         output = reconstructor.replace(times, replacements, ssr, y)
@@ -60,7 +55,7 @@ class Example(Frame):
 
     def pickFile(self, tb):
         filename = askopenfilename()
-        tb.insert(0,filename)
+        tb.insert(0, filename)
 
     def first_state(self):
 
@@ -77,8 +72,19 @@ class Example(Frame):
         choose_button = ttk.Button(self, text="choose an audio file", command=lambda: self.pickFile(url_text_box))
         choose_button.grid(row=1, column=2)
 
-        ok_button = ttk.Button(self, text="OK", command=lambda: self.onClick(url_text_box.get()))
+        v = Tkinter.StringVar()
+
+        ok_button = ttk.Button(self, text="OK", command=lambda: self.onClick(url_text_box.get(), v.get()))
         ok_button.grid(row=1, column=3)
+
+        r1 = ttk.Radiobutton(self, text="Standard Kit", variable=v, value='kit_2')
+        r1.grid(row=3, column=3)
+        r2 = ttk.Radiobutton(self, text="8-bit Kit", variable=v, value='kit_1')
+        r2.grid(row=4, column=3)
+        r3 = ttk.Radiobutton(self, text="Latin Kit", variable=v, value='kit_3')
+        r3.grid(row=5, column=3)
+
+        v.set('kit_2')
 
     def second_state(self):
         self.clear_screen()
@@ -117,13 +123,13 @@ class Example(Frame):
         y = (h - rootsize[1]) / 3
         self.parent.geometry("%dx%d+%d+%d" % (rootsize + (x, y)))
 
+
 def main(argv):
 
     root = Tk()
-    root.geometry("500x100+300+300")
+    root.geometry("500x150+300+300")
     app = Example(root)
     root.mainloop()
-
 
 
 if __name__ == "__main__":

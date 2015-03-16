@@ -4,7 +4,7 @@ import numpy as np
 # replaces each segment with its corresponding replacement, and returns the updated sound
 def replace(times, replacements, sr, y):
 
-    out = np.zeros(len(y))
+    out = np.zeros(len(y)+64000)
     for i in range(0, len(replacements)):
         start = times[i]*sr
         end = start + len(replacements[i])
