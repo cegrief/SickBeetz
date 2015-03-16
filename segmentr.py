@@ -13,7 +13,9 @@ SILENCE_THRESHOLD = .5
 
 def segment_audio(signal, sr):
 
-    o_env = librosa.onset.onset_strength(y=signal[5000:len(signal)-5000], sr=sr, centering=False, hop_length=HOP_LENGTH)
+    silence_threshold = 2*rms(signal[5000:5000+sr])
+    print 'silence threshold: ' + str(silence_threshold)
+    o_env = librosa.onset.onset_strength(y=signal, sr=sr, centering=False, hop_length=HOP_LENGTH)
     onset_frames = librosa.onset.onset_detect(onset_envelope=o_env, sr=sr, hop_length=HOP_LENGTH)
     onset_times = librosa.frames_to_time(onset_frames, sr=sr, hop_length=HOP_LENGTH)
 
@@ -21,17 +23,17 @@ def segment_audio(signal, sr):
     for i in range(0, len(onset_times)):
         segment_start = onset_times[i]*sr
         if i != len(onset_times)-1:
-            segment_end = find_segment_end(segment_start, (onset_times[i+1]*sr)-1, signal)
+            segment_end = find_segment_end(segment_start, (onset_times[i+1]*sr)-1, signal, silence_threshold)
         else:
-            segment_end = find_segment_end(segment_start, len(signal)-1, signal)
-        if segment_end - segment_start >= 512:
+            segment_end = find_segment_end(segment_start, len(signal)-1, signal, silence_threshold)
+        if (segment_end - segment_start >= 512) and (onset_times[i]*sr > 10000) and (onset_times[i]*sr < (len(signal)-10000)):
             segments.append(signal[segment_start: segment_end])
     return segments, onset_times
 
 
-def find_segment_end(st, n, signal):
+def find_segment_end(st, n, signal, silence_threshold):
     for i in xrange(int(st), int(n), SILENCE_STEP):
-        if rms(signal[i:n]) < SILENCE_THRESHOLD:
+        if rms(signal[i:n]) < silence_threshold:
             return i
     return n
 
