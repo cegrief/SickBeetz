@@ -9,18 +9,50 @@ import ttk
 import platform
 from tkFileDialog import askopenfilename
 import subprocess
+import Queue
+import threading
+import time
+import os
 
 
 class Example(Frame):
 
     def __init__(self, parent):
         Frame.__init__(self, parent)
-
         self.parent = parent
         self.raise_and_focus()
+        self.pack(fill=Tkinter.BOTH, expand=True)
+        self.splash_state()
+        self.queue = Queue.Queue()
+        threading.Thread(target=self.start_timer, args=[3, 1]).start()
+        self.periodic_dequeue()
+
+    def start_timer(self, seconds, num):
+        """
+        Waits for a specified number of seconds. Meant to be run asynchronously.
+        """
+        time.sleep(seconds)
+        self.queue.put(num)
+
+    def periodic_dequeue(self):
+        """
+        Periodically checks for incoming asynchronous content so that the GUI will not freeze
+        """
+        while self.queue.qsize():
+            try:
+                function = self.queue.get(0)
+                if function == 1:
+                    self.first_state()
+            except Queue.Empty:
+                pass
+        self.parent.after(100, self.periodic_dequeue)
+
+    def splash_state(self):
+        splash_image_file = Tkinter.PhotoImage(file=relative_path('sick_splash.gif'))
+        splash_image_widget = Tkinter.Label(self, image=splash_image_file)
+        splash_image_widget.photo = splash_image_file
+        splash_image_widget.pack()
         self.center_on_screen()
-        self.first_state()
-    
 
     def onClick(self, text, kit):
         self.second_state()
@@ -57,7 +89,9 @@ class Example(Frame):
         tb.insert(0, filename)
 
     def first_state(self):
-
+        self.clear_screen()
+        self.parent.geometry("500x150+300+300")
+        self.center_on_screen()
         self.columnconfigure(0, weight=1)
         self.columnconfigure(2, pad=10)
         self.pack_configure(padx=10, pady=10)
@@ -96,6 +130,7 @@ class Example(Frame):
         self.clear_screen()
         url_label = ttk.Label(self, text="Processing Complete! Your audio file is saved in output.wav")
         url_label.pack()
+        threading.Thread(target=self.start_timer, args=[2, 1]).start()
 
 
     def clear_screen(self):
@@ -126,9 +161,18 @@ class Example(Frame):
 def main(argv):
 
     root = Tk()
-    root.geometry("500x150+300+300")
+    root.title('Sick Beetz')
     app = Example(root)
     root.mainloop()
+
+
+def relative_path(path):
+    """
+    Get file path relative to calling script's directory
+    :param path: filename or file path
+    :return: full path name, relative to script location
+    """
+    return os.path.join(os.path.join(os.getcwd(), os.path.dirname(__file__)), path)
 
 
 if __name__ == "__main__":
