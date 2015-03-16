@@ -22,10 +22,10 @@ def main(argv):
         replacements.append(klassifier.use_classifier(model, i))
         #just do kit_1 ts.wav for now
         sy, ssr = librosa.load('kits/kit_1/ts.wav', sr=None)
-        replacements.append((sy, ssr))
+        replacements.append(sy)
 
-    signal = reconstructor.replace(times, replacements, segments, y, sr)
-    librosa.output.write_wav('output.wav', signal, sr)
+    output = reconstructor.replace(times, replacements, ssr, y)
+    librosa.output.write_wav('output.wav', output, ssr)
 
 
 
