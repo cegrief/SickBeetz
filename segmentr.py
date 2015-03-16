@@ -7,6 +7,7 @@ import numpy as np
 import math
 
 HOP_LENGTH = 256
+SILENCE_STEP = 2048
 SILENCE_THRESHOLD = .5
 
 
@@ -28,7 +29,7 @@ def segment_audio(signal, sr):
 
 
 def find_segment_end(st, n, signal):
-    for i in xrange(int(st), int(n), HOP_LENGTH):
+    for i in xrange(int(st), int(n), SILENCE_STEP):
         if rms(signal[i:n]) < SILENCE_THRESHOLD:
             return i
     return n
