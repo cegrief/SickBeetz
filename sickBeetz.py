@@ -68,18 +68,19 @@ class Example(Frame):
             thekit = 'kit_2'
 
         y, sr = librosa.load(path, sr=None)
-        segments, times = segmentr.segment_audio(y, sr)
-
+        segments = segmentr.segment_audio(y, sr)
+        samples = [s[0] for s in segments]
+        times = [s[1] for s in segments]
 
         # build the KNN classifier
         model = klassifier.load_classifier()
         replacements = []
         ssr = 0
-        for seg in segments:
+        for seg in samples:
             sy, ssr = klassifier.use_classifier(model, seg, thekit)
             replacements.append(sy)
 
-        output = reconstructor.replace(times, replacements, ssr, y)
+        output = reconstructor.replace(times, replacements, ssr)
         librosa.output.write_wav('output.wav', output, ssr)
         self.third_state()
         self.update()
