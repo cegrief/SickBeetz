@@ -22,8 +22,31 @@ def main(file_path, kit):
         sy, ssr = klassifier.use_classifier(model, seg, kit)
         replacements.append(sy)
 
-    output = reconstructor.replace(times, replacements, ssr)
+    # quantize and reconstruct
+    quantized_times = quantize_times(y, sr, times)
+    output = reconstructor.replace(quantized_times, replacements, ssr)
     librosa.output.write_wav('output.wav', output, ssr)
+
+
+def quantize_times(y, sr, times):
+    result = []
+    tempo, beats = librosa.beat.beat_track(y, sr)
+    print 'old tempo: ', tempo
+    while tempo > 220:
+        tempo = tempo/2
+    while tempo < 90:
+        tempo = tempo*2
+    print 'new tempo: ', tempo
+    beet = 16/tempo
+    print 'old times: ', times
+    first_time = times[0]
+    for time in times:
+        time = time - first_time
+        time = beet*round(float(time)/beet)
+        time = time + first_time
+        result.append(time)
+    print 'new times: ', result
+    return result
 
 
 def relative_path(path):
