@@ -45,6 +45,8 @@ class SickBeetzGUI(ttk.Frame):
         self.rec_button = None
         self.finished_processing = False
         self.kit_selected = False
+        self.is_quantized = Tkinter.BooleanVar()
+        self.anal_out = None
 
     def call_async(self, function, callback, *args):
         new_args = [function, callback]
@@ -88,11 +90,14 @@ class SickBeetzGUI(ttk.Frame):
 
         self.center_on_screen()
 
+    def quantize_and_classify(self, filename):
+        self.anal_out = sickBeetz.quantize_and_classify(filename)
+
     def select_kit(self):
         self.clear_screen()
         self.status.set('Processing...')
-        options = MutationOptions(self.window, self.parent)
-        self.call_async(sickBeetz.quantize_and_classify, options.processing_finished, 'temp.wav')
+        play_button = MutationOptions(self.window, self)
+        self.call_async(self.quantize_and_classify, play_button.processing_finished, 'temp.wav')
 
         self.window.columnconfigure(0, weight=1)
         self.window.columnconfigure(1, weight=0)
@@ -133,14 +138,14 @@ class SickBeetzGUI(ttk.Frame):
         quantize_text = Tkinter.Label(self.window, text="Would you like to quantize your input? This will track your "
                                                         "tempo and align your beats.", wraplength=1000,
                                       justify=Tkinter.CENTER)
-        quantize_text.grid(row=4, column=1, columnspan=3)
+        quantize_text.grid(row=4, column=1, columnspan=3, pady=20)
 
-        is_quantized = Tkinter.BooleanVar()
 
-        c = Tkinter.Checkbutton(self.window, text="Quantize", variable=is_quantized)
+
+        c = Tkinter.Checkbutton(self.window, text="Quantize", variable=self.is_quantized)
         c.grid(row=5, column=1, columnspan=3)
 
-        options.grid(row=6, column=1, columnspan=3)
+        play_button.grid(row=6, column=1, columnspan=3)
 
         self.update()
 
@@ -189,16 +194,29 @@ class PlayAudioButton(Tkinter.Frame):
         self.ready()
 
     def ready(self):
-        onsets = None
-        quantized = None
-        kit = None
         self.button.config(image=self.play_button_img,
-                           command=lambda: self.gui.call_async(self.play_audio, None, onsets, quantized, kit))
+                           command=lambda: self.gui.call_async(
+                               self.play_audio, None, self.gui.anal_out[0], self.gui.anal_out[1], self.gui.anal_out[2],
+                               self.gui.kit_selected, self.gui.is_quantized.get()))
         self.button.photo = self.play_button_img
         self.update()
 
-    def play_audio(self, onsets, quantized, kit):
-        pass
+    def play_audio(self, times, q_times, labels, kit, quantized):
+        if not sickBeetz.build_output(times, q_times, labels, kit, quantized):
+            return
+        chunk = 1024
+        wf = wave.open(sickBeetz.relative_path('output.wav'), 'rb')
+        p = pyaudio.PyAudio()
+        stream = p.open(format=p.get_format_from_width(wf.getsampwidth()),
+                        channels=wf.getnchannels(),
+                        rate=wf.getframerate(),
+                        output=True)
+        data = wf.readframes(chunk)
+        while data != '':
+            stream.write(data)
+            data = wf.readframes(chunk)
+        stream.close()
+        p.terminate()
 
 
 class StatusBar(ttk.Frame):
@@ -242,7 +260,7 @@ class MutationOptions(Tkinter.Frame):
         self.gui.status.set('Finished processing!')
         self.clear_screen()
         button = PlayAudioButton(self, self.gui)
-        button.pack()
+        button.pack(pady=10)
 
 
 class RecordButton(Tkinter.Frame):

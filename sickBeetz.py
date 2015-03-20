@@ -75,7 +75,7 @@ def build_output(times, quantized_times, labels, kit, quantized=True):
     # replace beatbox with drums
     drums = []
     for label in labels:
-        drum, ssr = librosa.load('kits/'+kit+'/'+label+'.wav', sr=None)
+        drum, ssr = librosa.load('kits/'+kit+'/'+label[0]+'.wav', sr=None)
         drums.append(drum)
 
     # reconstruct signal from replaced sounds
@@ -85,7 +85,7 @@ def build_output(times, quantized_times, labels, kit, quantized=True):
         result = reconstructor.replace(times, drums, ssr)
 
     # write output signal to .wav
-    librosa.output.write_wav('output.wav', result, ssr)
+    librosa.output.write_wav(relative_path('output.wav'), result, ssr)
     return True
 
 
