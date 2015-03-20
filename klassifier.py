@@ -28,10 +28,11 @@ def train_classifier(data, labels):
     return model
 
 
-def use_classifier(classifier, seg, kit):
+def use_classifier(classifier, seg):
     p = classifier.predict(get_feature_from_mfcc(get_mfcc(seg, 44100)))
+    return p
     # print "Sample: %s\nPrediction: %s" % (seg, p)
-    return librosa.load('kits/'+kit+'/'+p[0]+'.wav', sr=None)
+    # return librosa.load('kits/'+kit+'/'+p[0]+'.wav', sr=None)
 
 
 def main():

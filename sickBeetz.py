@@ -30,23 +30,39 @@ def main(file_path, kit):
 
 def quantize_times(y, sr, times):
     result = []
-    tempo, beats = librosa.beat.beat_track(y, sr)
-    print 'old tempo: ', tempo
+    tempo = librosa.beat.beat_track(y, sr)[0]
     while tempo > 220:
         tempo = tempo/2
     while tempo < 90:
         tempo = tempo*2
-    print 'new tempo: ', tempo
     beet = 16/tempo
-    print 'old times: ', times
     first_time = times[0]
     for time in times:
         time = time - first_time
         time = beet*round(float(time)/beet)
         time = time + first_time
         result.append(time)
-    print 'new times: ', result
     return result
+
+
+def quantize_and_classify(filename):
+    # load and segment audio signal
+    y, sr = librosa.load(filename, sr=None)
+    segments = segmentr.segment_audio(y, sr)
+    samples = [s[0] for s in segments]
+    times = [s[1] for s in segments]
+
+    # build and use KNN classifier
+    model = klassifier.load_classifier()
+    labels = []
+    for seg in samples:
+        label = klassifier.use_classifier(model, seg)
+        labels.append(label)
+
+   # quantize onset times to estimated tempo
+    quantized_times = quantize_times(y, sr, times)
+
+    return (times, quantized_times, labels)
 
 
 def relative_path(path):
