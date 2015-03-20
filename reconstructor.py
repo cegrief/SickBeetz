@@ -2,9 +2,9 @@ import numpy as np
 
 
 # replaces each segment with its corresponding replacement, and returns the updated sound
-def replace(times, replacements, sr, y):
-
-    out = np.zeros(len(y)+64000)
+def replace(times, replacements, sr):
+    MAX_KIT_SOUND = 400000
+    out = np.zeros(times[-1]*sr+MAX_KIT_SOUND)
     for i in range(0, len(replacements)):
         start = times[i]*sr
         end = start + len(replacements[i])

@@ -6,6 +6,10 @@ import librosa
 import os
 import numpy as np
 import matplotlib.pyplot as plt
+import pickle
+
+import segmentr
+import sickBeetz
 
 training_mfccs = [0, 1, 2, 4, 5]
 num_mfccs = 20
@@ -15,19 +19,17 @@ def train_classifier(data, labels):
     model = KNeighborsClassifier()
     model.fit(data, labels)
 
-    # expected = labels
-    # predicted = model.predict(data)
-    #
-    # print classification_report(expected, predicted)
-    # print confusion_matrix(expected, predicted)
+    expected = labels
+    predicted = model.predict(data)
+
+    print classification_report(expected, predicted)
+    print confusion_matrix(expected, predicted)
 
     return model
 
 
 def use_classifier(classifier, seg, kit):
-    librosa.output.write_wav('seg.wav', seg, 44100)
-    p = classifier.predict(get_feature_from_mfcc(get_mfcc('seg.wav', 44100)))
-    os.remove('seg.wav')
+    p = classifier.predict(get_feature_from_mfcc(get_mfcc(seg, 44100)))
     # print "Sample: %s\nPrediction: %s" % (seg, p)
     return librosa.load('kits/'+kit+'/'+p[0]+'.wav', sr=None)
 
@@ -36,36 +38,55 @@ def main():
     model = load_classifier()
 
 
+def load_pickle(filename):
+    model_file = sickBeetz.relative_path(filename)
+    if os.path.isfile(model_file):
+        return pickle.load(open(model_file, 'rb'))
+    return []
+
+
+def save_pickle(object, filename):
+    model_file = sickBeetz.relative_path(filename)
+    pickle.dump(object, open(model_file, 'wb'))
+
+
 def load_classifier():
     samples = load_samples()
     features = []
     labels = []
-    for sample in samples['ts']:
-        features.append(get_feature_from_mfcc(get_mfcc(sample, 44100)))
-        labels.append('ts')
-    for sample in samples['b']:
-        features.append(get_feature_from_mfcc(get_mfcc(sample, 44100)))
-        labels.append('b')
-    for sample in samples['c']:
-        features.append(get_feature_from_mfcc(get_mfcc(sample, 44100)))
-        labels.append('c')
+    for sample, label, sr in samples:
+        features.append(get_feature_from_mfcc(get_mfcc(sample, sr)))
+        labels.append(label)
     model = train_classifier(features, labels)
     return model
 
 
 def load_samples():
-    current_dir = os.path.dirname(os.path.realpath(__file__))
-    samples = {}
-    for inst in ['b', 'ts', 'c']:
-        foo = os.path.join(current_dir, 'samples', inst)
-        samples[inst] = [os.path.abspath('samples/'+inst+'/'+f)
-                         for f in os.listdir(foo) if os.path.isfile(os.path.join(foo, f))]
-    return samples
+    result = load_pickle('samples.p')
+    table_of_contents = load_pickle('toc.p')
+    samples_dir = sickBeetz.relative_path('samples/unparsed-samples')
+    for filename in os.listdir(samples_dir):
+        if filename in table_of_contents:
+            continue
+        full_filename = sickBeetz.relative_path(os.path.join('samples/unparsed-samples', filename))
+        if not os.path.isfile(full_filename):
+            continue
+        label_toks = filename.split('-')
+        label = '-'.join(label_toks[i] for i in range(len(label_toks)-1))
+        y, sr = librosa.load(full_filename, sr=None)
+
+        segments = segmentr.segment_audio(y, sr)
+        print filename + ' - ' + str(len(segments))
+        for segment in segments:
+            result.append((segment[0], label, sr))
+        table_of_contents.append(filename)
+    save_pickle(result, 'samples.p')
+    save_pickle(table_of_contents, 'toc.p')
+    return result
 
 
-def get_mfcc(filename, sr, plot=False):
-    y, sr = librosa.load(filename, sr)
-    S = librosa.feature.melspectrogram(y, sr=sr, n_fft=2048, hop_length=64, n_mels=128)
+def get_mfcc(y, sr, plot=False):
+    S = librosa.feature.melspectrogram(y=y, sr=sr, n_fft=2048, hop_length=64, n_mels=128)
     log_S = librosa.logamplitude(S, ref_power=np.max)
     mfcc = librosa.feature.mfcc(S=log_S, n_mfcc=num_mfccs)
 
