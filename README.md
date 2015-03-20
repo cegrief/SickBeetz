@@ -1,8 +1,8 @@
 SickBeetz
 ======
-Authors: Corey Grief, Neal Kfoury, and Adam Snyder
-Northwestern Univeristy
-EECS 352
+Authors: Corey Grief, Neal Kfoury, and Adam Snyder  
+Northwestern Univeristy 
+EECS 352  
 Professor Bryan Pardo
 
 ###Overview
