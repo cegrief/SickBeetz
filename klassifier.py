@@ -28,10 +28,11 @@ def train_classifier(data, labels):
     return model
 
 
-def use_classifier(classifier, seg, kit):
+def use_classifier(classifier, seg):
     p = classifier.predict(get_feature_from_mfcc(get_mfcc(seg, 44100)))
+    return p
     # print "Sample: %s\nPrediction: %s" % (seg, p)
-    return librosa.load('kits/'+kit+'/'+p[0]+'.wav', sr=None)
+    # return librosa.load('kits/'+kit+'/'+p[0]+'.wav', sr=None)
 
 
 def main():
@@ -46,8 +47,9 @@ def load_pickle(filename):
 
 
 def save_pickle(object, filename):
-    model_file = sickBeetz.relative_path(filename)
-    pickle.dump(object, open(model_file, 'wb'))
+    model_file = open(sickBeetz.relative_path(filename), 'wb')
+    pickle.dump(object, model_file)
+    model_file.close()
 
 
 def load_classifier():
