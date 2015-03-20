@@ -98,7 +98,7 @@ class SickBeetzGUI(ttk.Frame):
     def select_kit(self):
         self.clear_screen()
         self.status.set('Processing...')
-        self.call_async(self.bogus_processing_function, self.processing_finished, 'temp.wav')
+        self.call_async(sickBeetz.quantize_and_classify, self.processing_finished, 'temp.wav')
 
         self.window.columnconfigure(0, weight=1)
         self.window.columnconfigure(1, weight=0)
