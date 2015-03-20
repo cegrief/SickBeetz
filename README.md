@@ -15,7 +15,10 @@ python sickBeetz.py
 ```
 At the home screen, the user may press the record button and begin beatboxing into the system's microphone. The user may press the stop button when the user is through.
 
-The interface will then prompt the user to select their preferred of three drum kits, and provide the user with the option to quantize their beat to its estimated tempo. The user may subsequently press the play button to hear the result.
+The interface will then prompt the user to select their preferred of three drum kits, and provide the user with the option to quantize their beat to its estimated tempo. The user may subsequently press the play button to hear the result, which the user shall be able thereafter to find located in the SickBeetz directory under the name:
+```
+output.wav
+```
 
 ###Packages Used
 ####LibROSA
