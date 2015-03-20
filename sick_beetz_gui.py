@@ -168,7 +168,7 @@ class SickBeetzGUI(ttk.Frame):
         play_button.grid(row=6, column=1, columnspan=3)
 
         next_button = Tkinter.Button(self.window, text='New Recording', command=self.record_state)
-        next_button.grid(row=7, column=1, columnspan=3, pady=50)
+        next_button.grid(row=7, column=1, columnspan=3, pady=20)
 
         self.update()
 
@@ -319,6 +319,9 @@ class RecordButton(Tkinter.Frame):
         self.update()
         self.is_recording = False
 
+    def submit(self):
+        self.is_recording = False
+
     def record_audio(self):
         self.button.config(state=Tkinter.DISABLED)
 
@@ -352,7 +355,7 @@ class RecordButton(Tkinter.Frame):
 
             if not really_going and len(frames) > 0.5*rate/chunk:
                 really_going = True
-                self.button.config(image=self.stop_button_img, command=self.record_ready)
+                self.button.config(image=self.stop_button_img, command=self.submit)
                 self.button.photo = self.stop_button_img
                 self.button.config(state=Tkinter.NORMAL)
                 self.update()
