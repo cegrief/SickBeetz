@@ -1,6 +1,5 @@
 SickBeetz
 ======
-##Generating Beats by Beatboxing
 Authors: Corey Grief, Neal Kfoury, and Adam Snyder  
 Northwestern Univeristy 
 EECS 352  
