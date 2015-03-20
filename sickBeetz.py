@@ -65,6 +65,28 @@ def quantize_and_classify(filename):
     return (times, quantized_times, labels)
 
 
+def build_output(times, quantized_times, labels, kit, quantized=True):
+    # check for empty arrays
+    if not times or not labels:
+        return False
+
+    # replace beatbox with drums
+    drums = []
+    for label in labels:
+        drum, ssr = librosa.load('kits/'+kit+'/'+label+'.wav', sr=None)
+        drums.append(drum)
+
+    # reconstruct signal from replaced sounds
+    if quantized:
+        result = reconstructor.replace(quantized_times, drums, ssr)
+    else:
+        result = reconstructor.replace(times, drums, ssr)
+
+    # write output signal to .wav
+    librosa.output.write_wav('output.wav', result, ssr)
+    return True
+
+
 def relative_path(path):
     """
     Get file path relative to calling script's directory
