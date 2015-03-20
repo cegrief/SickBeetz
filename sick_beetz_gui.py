@@ -6,9 +6,12 @@ import subprocess
 import ttk
 import pyaudio
 import wave
-import time
 
 import sickBeetz
+import klassifier
+
+
+model = None
 
 
 class SickBeetzGUI(ttk.Frame):
@@ -39,14 +42,16 @@ class SickBeetzGUI(ttk.Frame):
         self.queue = Queue.Queue()
         self.periodic_dequeue()
 
-        self.record_state()
-
         # Misc globals
         self.rec_button = None
         self.finished_processing = False
-        self.kit_selected = False
+        self.kit_selected = None
         self.is_quantized = Tkinter.BooleanVar()
         self.anal_out = None
+
+        # Run
+        self.record_state()
+        self.status.set('Loading classifier...')
 
     def call_async(self, function, callback, *args):
         new_args = [function, callback]
@@ -70,7 +75,19 @@ class SickBeetzGUI(ttk.Frame):
                 pass
         self.parent.after(100, self.periodic_dequeue)
 
+    def get_model(self, button):
+        global model
+        model = klassifier.load_classifier()
+        button.config(state=Tkinter.NORMAL)
+        self.status.set('Waiting for user')
+
     def record_state(self):
+        self.kit_selected = None
+        self.anal_out = None
+        self.is_quantized.set(False)
+        self.finished_processing = False
+        self.rec_button = None
+
         self.clear_screen()
 
         self.window.columnconfigure(0, weight=1)
@@ -87,11 +104,11 @@ class SickBeetzGUI(ttk.Frame):
 
         rec_button = RecordButton(self.window, self)
         rec_button.grid(row=2, column=1)
-
+        self.call_async(self.get_model, None, rec_button.button)
         self.center_on_screen()
 
     def quantize_and_classify(self, filename):
-        self.anal_out = sickBeetz.quantize_and_classify(filename)
+        self.anal_out = sickBeetz.quantize_and_classify(filename, model)
 
     def select_kit(self):
         self.clear_screen()
@@ -111,7 +128,8 @@ class SickBeetzGUI(ttk.Frame):
 
         standard_kit_img = Tkinter.PhotoImage(file=sickBeetz.relative_path('img/standard_kit.gif'))
         standard_kit_button = Tkinter.Button(self.window, image=standard_kit_img,
-                                             command=lambda: self.set_drum_kit('kit_2', standard_kit_button, button_list))
+                                             command=lambda: self.set_drum_kit(
+                                                 'kit_2', standard_kit_button, button_list, play_button))
         standard_kit_button.photo = standard_kit_img
         standard_kit_button.grid(row=2, column=1)
         standard_txt = Tkinter.Label(self.window, text='Standard Kit')
@@ -119,7 +137,8 @@ class SickBeetzGUI(ttk.Frame):
 
         bit_kit_img = Tkinter.PhotoImage(file=sickBeetz.relative_path('img/8bit_kit.gif'))
         bit_kit_button = Tkinter.Button(self.window, image=bit_kit_img,
-                                        command=lambda: self.set_drum_kit('kit_1', bit_kit_button, button_list))
+                                        command=lambda: self.set_drum_kit(
+                                            'kit_1', bit_kit_button, button_list, play_button))
         bit_kit_button.photo = bit_kit_img
         bit_kit_button.grid(row=2, column=2)
         bit_txt = Tkinter.Label(self.window, text='8-Bit Kit')
@@ -127,7 +146,8 @@ class SickBeetzGUI(ttk.Frame):
 
         latin_kit_img = Tkinter.PhotoImage(file=sickBeetz.relative_path('img/latin_kit.gif'))
         latin_kit_button = Tkinter.Button(self.window, image=latin_kit_img,
-                                          command=lambda: self.set_drum_kit('kit_3', latin_kit_button, button_list))
+                                          command=lambda: self.set_drum_kit(
+                                              'kit_3', latin_kit_button, button_list, play_button))
         latin_kit_button.photo = latin_kit_img
         latin_kit_button.grid(row=2, column=3)
         latin_txt = Tkinter.Label(self.window, text='Latin Kit')
@@ -147,13 +167,18 @@ class SickBeetzGUI(ttk.Frame):
 
         play_button.grid(row=6, column=1, columnspan=3)
 
+        next_button = Tkinter.Button(self.window, text='New Recording', command=self.record_state)
+        next_button.grid(row=7, column=1, columnspan=3, pady=50)
+
         self.update()
 
-    def set_drum_kit(self, kit, button, button_list):
+    def set_drum_kit(self, kit, button, button_list, play_button):
         for b in button_list:
             b.config(state=Tkinter.NORMAL)
         self.kit_selected = kit
         button.config(state=Tkinter.DISABLED)
+        if play_button.button:
+            play_button.button.button.config(state=Tkinter.NORMAL)
 
     def clear_screen(self):
         for widget in self.window.winfo_children():
@@ -189,6 +214,8 @@ class PlayAudioButton(Tkinter.Frame):
         self.stop_button_img = Tkinter.PhotoImage(file=sickBeetz.relative_path('img/stop_button.gif'))
         self.play_button_img = Tkinter.PhotoImage(file=sickBeetz.relative_path('img/play_button.gif'))
         self.button = Tkinter.Button(self)
+        if not gui.kit_selected:
+            self.button.config(state=Tkinter.DISABLED)
         self.config(width=40, height=40)
         self.button.pack()
         self.ready()
@@ -202,8 +229,14 @@ class PlayAudioButton(Tkinter.Frame):
         self.update()
 
     def play_audio(self, times, q_times, labels, kit, quantized):
+        self.button.config(state=Tkinter.DISABLED)
+        self.gui.status.set('Building output...')
         if not sickBeetz.build_output(times, q_times, labels, kit, quantized):
+            self.gui.status.set('Build failure: No input detected')
+            self.button.config(state=Tkinter.NORMAL)
             return
+        self.gui.status.set('Output is playing')
+        self.button.config(state=Tkinter.NORMAL)
         chunk = 1024
         wf = wave.open(sickBeetz.relative_path('output.wav'), 'rb')
         p = pyaudio.PyAudio()
@@ -217,6 +250,7 @@ class PlayAudioButton(Tkinter.Frame):
             data = wf.readframes(chunk)
         stream.close()
         p.terminate()
+        self.gui.status.set('Output has finished playing')
 
 
 class StatusBar(ttk.Frame):
@@ -245,6 +279,7 @@ class MutationOptions(Tkinter.Frame):
         self.parent = parent
         self.gui = gui
         self.waiting_state()
+        self.button = None
 
     def waiting_state(self):
         label_1 = Tkinter.Label(self, text="Processing...")
@@ -259,8 +294,8 @@ class MutationOptions(Tkinter.Frame):
     def processing_finished(self):
         self.gui.status.set('Finished processing!')
         self.clear_screen()
-        button = PlayAudioButton(self, self.gui)
-        button.pack(pady=10)
+        self.button = PlayAudioButton(self, self.gui)
+        self.button.pack(pady=10)
 
 
 class RecordButton(Tkinter.Frame):
@@ -271,7 +306,7 @@ class RecordButton(Tkinter.Frame):
         self.gui = gui
         self.rec_button_img = Tkinter.PhotoImage(file=sickBeetz.relative_path('img/rec_button.gif'))
         self.stop_button_img = Tkinter.PhotoImage(file=sickBeetz.relative_path('img/stop_button.gif'))
-        self.button = Tkinter.Button(self)
+        self.button = Tkinter.Button(self, state=Tkinter.DISABLED)
         self.config(width=40, height=40)
         self.button.pack()
         self.record_ready()
