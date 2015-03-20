@@ -30,11 +30,13 @@ def main(file_path, kit):
 
 def quantize_times(y, sr, times):
     result = []
+    if not times:
+        return result
     tempo = librosa.beat.beat_track(y, sr)[0]
     while tempo > 220:
-        tempo = tempo/2
+        tempo /= 2
     while tempo < 90:
-        tempo = tempo*2
+        tempo *= 2
     beet = 16/tempo
     first_time = times[0]
     for time in times:
@@ -59,7 +61,7 @@ def quantize_and_classify(filename):
         label = klassifier.use_classifier(model, seg)
         labels.append(label)
 
-   # quantize onset times to estimated tempo
+    # quantize onset times to estimated tempo
     quantized_times = quantize_times(y, sr, times)
 
     return (times, quantized_times, labels)

@@ -68,6 +68,9 @@ def load_samples():
     table_of_contents = load_pickle('toc.p')
     samples_dir = sickBeetz.relative_path('samples/unparsed-samples')
     for filename in os.listdir(samples_dir):
+        filetype = filename.split('.')[-1]
+        if filetype != 'wav':
+            continue
         if filename in table_of_contents:
             continue
         full_filename = sickBeetz.relative_path(os.path.join('samples/unparsed-samples', filename))
