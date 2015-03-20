@@ -11,7 +11,7 @@ Analyzes recordings of humans beatboxing and transforms them into electronic dru
 ####Running the Program
 The user may lauch SickBeetz from the command line without any additional arguments, like so:
 ```
-python sickbeetz.py
+python sickBeetz.py
 ```
 At the home screen, the user may press the record button and begin beatboxing into the system's microphone. The user may press the stop button when the user is through.
 
