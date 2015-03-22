@@ -13,7 +13,7 @@ def replace(times, replacements, sr):
 
 
 def initialize_output(times, replacements, sr):
-    end_times = [len(times)]
+    end_times = []
     for i in range(len(times)):
-        end_times[i] = sr*times[i] + len(replacements[i])
+        end_times.append(sr*times[i] + len(replacements[i]))
     return np.zeros(max(end_times)+1)

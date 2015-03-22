@@ -262,7 +262,7 @@ class StatusBar(ttk.Frame):
 
     def __init__(self, parent):
         ttk.Frame.__init__(self, parent)
-        self.label = ttk.Label(self, relief=Tkinter.SUNKEN, anchor='w')
+        self.label = Tkinter.Label(self, relief=Tkinter.SUNKEN, anchor='w')
         self.label.pack(fill=Tkinter.X)
 
     def set(self, format0, *args):
