@@ -95,6 +95,8 @@ class SickBeetzGUI(ttk.Frame):
         self.window.columnconfigure(2, weight=1)
         self.window.columnconfigure(3, weight=0)
         self.window.columnconfigure(4, weight=0)
+        self.window.rowconfigure(0, weight=1)
+        self.window.rowconfigure(3, weight=5)
 
         header_text = Tkinter.Label(self.window, text="Hello and welcome to SickBeetz, a program that will transform "
                                                       "your beatboxing into a polished drum beat.\nTo begin, click the "
@@ -213,7 +215,7 @@ class PlayAudioButton(Tkinter.Frame):
         self.gui = gui
         self.stop_button_img = Tkinter.PhotoImage(file=sickBeetz.relative_path('img/stop_button.gif'))
         self.play_button_img = Tkinter.PhotoImage(file=sickBeetz.relative_path('img/play_button.gif'))
-        self.button = Tkinter.Button(self)
+        self.button = Tkinter.Button(self, height=50, width=100)
         if not gui.kit_selected:
             self.button.config(state=Tkinter.DISABLED)
         self.config(width=40, height=40)
@@ -307,6 +309,7 @@ class RecordButton(Tkinter.Frame):
         self.rec_button_img = Tkinter.PhotoImage(file=sickBeetz.relative_path('img/rec_button.gif'))
         self.stop_button_img = Tkinter.PhotoImage(file=sickBeetz.relative_path('img/stop_button.gif'))
         self.button = Tkinter.Button(self, state=Tkinter.DISABLED)
+        self.button.config(width=100, height=50)
         self.config(width=40, height=40)
         self.button.pack()
         self.record_ready()
