@@ -11,7 +11,7 @@ SILENCE_STEP = 2048
 SILENCE_THRESHOLD = .5
 MIN_SOUND_LEN = 0.02
 START_TIME = 0.5
-END_TIME = 0.5
+END_TIME = 0.1
 
 
 def segment_audio(signal, sr):

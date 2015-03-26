@@ -11,7 +11,8 @@ import pickle
 import segmentr
 import sickBeetz
 
-training_mfccs = [0, 1, 2, 4, 5]
+training_mfccs = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19]
+# training_mfccs = [0, 1, 2, 4, 5]
 num_mfccs = 20
 
 
@@ -53,6 +54,9 @@ def save_pickle(object, filename):
 
 
 def load_classifier():
+    model = load_pickle('model.p')
+    if model:
+        return model
     samples = load_samples()
     features = []
     labels = []
@@ -60,6 +64,7 @@ def load_classifier():
         features.append(get_feature_from_mfcc(get_mfcc(sample, sr)))
         labels.append(label)
     model = train_classifier(features, labels)
+    save_pickle(model, 'model.p')
     return model
 
 
@@ -68,6 +73,9 @@ def load_samples():
     table_of_contents = load_pickle('toc.p')
     samples_dir = sickBeetz.relative_path('samples/unparsed-samples')
     for filename in os.listdir(samples_dir):
+        filetype = filename.split('.')[-1]
+        if filetype != 'wav':
+            continue
         if filename in table_of_contents:
             continue
         full_filename = sickBeetz.relative_path(os.path.join('samples/unparsed-samples', filename))

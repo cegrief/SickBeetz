@@ -19,7 +19,7 @@ def main(file_path, kit):
     replacements = []
     ssr = 0
     for seg in samples:
-        sy, ssr = klassifier.use_classifier(model, seg, kit)
+        sy, ssr = klassifier.use_classifier(model, seg)
         replacements.append(sy)
 
     # quantize and reconstruct
@@ -30,11 +30,13 @@ def main(file_path, kit):
 
 def quantize_times(y, sr, times):
     result = []
+    if not times:
+        return result
     tempo = librosa.beat.beat_track(y, sr)[0]
     while tempo > 220:
-        tempo = tempo/2
+        tempo /= 2
     while tempo < 90:
-        tempo = tempo*2
+        tempo *= 2
     beet = 16/tempo
     first_time = times[0]
     for time in times:
@@ -45,24 +47,48 @@ def quantize_times(y, sr, times):
     return result
 
 
-def quantize_and_classify(filename):
+def quantize_and_classify(filename, model):
     # load and segment audio signal
     y, sr = librosa.load(filename, sr=None)
     segments = segmentr.segment_audio(y, sr)
     samples = [s[0] for s in segments]
     times = [s[1] for s in segments]
-
-    # build and use KNN classifier
-    model = klassifier.load_classifier()
     labels = []
     for seg in samples:
         label = klassifier.use_classifier(model, seg)
         labels.append(label)
 
-   # quantize onset times to estimated tempo
+    # quantize onset times to estimated tempo
     quantized_times = quantize_times(y, sr, times)
 
     return (times, quantized_times, labels)
+
+
+def build_output(times, quantized_times, labels, kit, quantized=True):
+    # check for empty arrays
+    if not times or not labels:
+        return False
+    labels = [label[0] for label in labels]
+    # replace beatbox with drums
+    drums = []
+    label_to_kit = {}
+    for label in labels:
+        if label in label_to_kit:
+            drum = label_to_kit[label]
+        else:
+            drum, ssr = librosa.load('kits/'+kit+'/'+label+'.wav', sr=None)
+            label_to_kit[label] = drum
+        drums.append(drum)
+
+    # reconstruct signal from replaced sounds
+    if quantized:
+        result = reconstructor.replace(quantized_times, drums, ssr)
+    else:
+        result = reconstructor.replace(times, drums, ssr)
+
+    # write output signal to .wav
+    librosa.output.write_wav(relative_path('output.wav'), result, ssr)
+    return True
 
 
 def relative_path(path):
