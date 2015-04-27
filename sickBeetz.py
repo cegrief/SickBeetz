@@ -5,27 +5,12 @@ import klassifier
 import reconstructor
 import os
 
-import sick_beetz_gui
+#import sick_beetz_gui
 
 
 def main(file_path, kit):
-    y, sr = librosa.load(file_path, sr=None)
-    segments = segmentr.segment_audio(y, sr)
-    samples = [s[0] for s in segments]
-    times = [s[1] for s in segments]
-
-    # build the KNN classifier
-    model = klassifier.load_classifier()
-    replacements = []
-    ssr = 0
-    for seg in samples:
-        sy, ssr = klassifier.use_classifier(model, seg)
-        replacements.append(sy)
-
-    # quantize and reconstruct
-    quantized_times = quantize_times(y, sr, times)
-    output = reconstructor.replace(quantized_times, replacements, ssr)
-    librosa.output.write_wav('output.wav', output, ssr)
+    time, quantized, labels = quantize_and_classify(file_path, klassifier.load_classifier())
+    build_output(time, quantized, labels, kit, False)
 
 
 def quantize_times(y, sr, times):
@@ -101,9 +86,10 @@ def relative_path(path):
 
 
 if __name__ == "__main__":
-    if len(sys.argv) == 1:
-        sick_beetz_gui.main()
-    elif len(sys.argv) == 3:
+    # if len(sys.argv) == 1:
+    #     #sick_beetz_gui.main()
+    # el
+    if len(sys.argv) == 3:
         main(sys.argv[1], sys.argv[2])
     else:
         print 'usage: python sickBeetz [path_to_wav] [kit]'
