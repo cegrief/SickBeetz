@@ -1,3 +1,4 @@
+import numpy
 import sys
 import librosa
 import segmentr
@@ -10,7 +11,7 @@ import os
 
 def main(file_path, kit):
     time, quantized, labels = quantize_and_classify(file_path, klassifier.load_classifier())
-    build_output(time, quantized, labels, kit, False)
+    print build_output(time, quantized, labels, kit, file_path, False)
 
 
 def quantize_times(y, sr, times):
@@ -49,7 +50,7 @@ def quantize_and_classify(filename, model):
     return (times, quantized_times, labels)
 
 
-def build_output(times, quantized_times, labels, kit, quantized=True):
+def build_output(times, quantized_times, labels, kit, file_path, quantized=True):
     # check for empty arrays
     if not times or not labels:
         return False
@@ -61,7 +62,7 @@ def build_output(times, quantized_times, labels, kit, quantized=True):
         if label in label_to_kit:
             drum = label_to_kit[label]
         else:
-            drum, ssr = librosa.load('kits/'+kit+'/'+label+'.wav', sr=None)
+            drum, ssr = librosa.load('../kits/'+kit+'/'+label+'.wav', sr=None)
             label_to_kit[label] = drum
         drums.append(drum)
 
@@ -72,8 +73,8 @@ def build_output(times, quantized_times, labels, kit, quantized=True):
         result = reconstructor.replace(times, drums, ssr)
 
     # write output signal to .wav
-    librosa.output.write_wav(relative_path('output.wav'), result, ssr)
-    return True
+    librosa.output.write_wav(file_path[:-4]+'-out.wav', result, ssr)
+    return result, ssr
 
 
 def relative_path(path):
