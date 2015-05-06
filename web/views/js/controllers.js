@@ -32,7 +32,7 @@ angular.module('secrets.controllers', [])
                 // create new instance of Recorder.js using the mediaStreamSource
                 rec = new Recorder(mediaStreamSource, {
                     // pass the path to recorderWorker.js file here
-                    workerPath: '/bower_components/Recorderjs/recorderWorker.js'
+                    workerPath: '/bower_components/recorderjs/recorderWorker.js'
                 });
 
                 // start recording
