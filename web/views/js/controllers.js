@@ -8,10 +8,13 @@ angular.module('secrets.controllers', [])
         var mediaStream;
         var rec;
 
+        $scope.kit='kit_2';
+
         $scope.submitForm=function(){
             var file = $scope.input;
             var fd = new FormData();
             fd.append('file', file);
+            fd.append('kit', $scope.kit);
             $http.post('/sickBeetz',fd,{
                 transformReques: angular.identity,
                 headers: {'Content-Type':undefined}
@@ -22,6 +25,7 @@ angular.module('secrets.controllers', [])
         };
 
         $scope.record = function() {
+            $scope.recorded =false;
             // ask for permission and start recording
             navigator.getUserMedia({audio: true}, function(localMediaStream){
                 mediaStream = localMediaStream;
@@ -54,6 +58,8 @@ angular.module('secrets.controllers', [])
                 rec.clear();
                 console.log(e);
                 $scope.input = blobToFile(e, 'input.wav');
+                $scope.recorded = true;
+                $scope.$apply();
             });
         };
 
@@ -63,6 +69,5 @@ angular.module('secrets.controllers', [])
             theBlob.name = fileName;
             return theBlob;
         }
-
 
     });

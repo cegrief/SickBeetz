@@ -2,6 +2,7 @@ var express = require('express');
 var multer = require('multer');
 var http = require('http');
 var path = require('path');
+var bodyParser = require('body-parser')
 
 var app = express();
 
@@ -11,6 +12,8 @@ app.set('port', 5000);
 app.use(express.static(path.join(__dirname, '/views/')));
 app.use('/bower_components', express.static(__dirname + '/bower_components'));
 app.use('/uploads', express.static(__dirname + '/uploads'));
+
+app.use(bodyParser());
 
 app.use(multer({
   dest:'./uploads/',

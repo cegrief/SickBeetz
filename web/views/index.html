@@ -6,18 +6,28 @@
 <body>
 
 <div ng-controller="indexController">
-    <button ng-click="record()">Record</button>
-    <button ng-click="stop()">Stop</button>
-
-    <button ng-click="showFile()">Show File</button>
-
-    <br/>
+    <div>
+        <b>Record Audio in Your Browser </b><br/>
+        <button ng-click="record()">Record</button>
+        <button ng-click="stop()">Stop</button>
+        <br/>
+        <b ng-show="recorded">Audio Recorded, press submit to send to SickBeetz</b>
+        <br/>
+        <br/>
+    </div>
+    <p>OR</p>
     <form method="post" enctype="multipart/form-data">
         <label for="audio"><b>Select A File for input to SickBeetz</b></label><br><br>
         <input type="file" name="audio" file-model="input"><br/><br/>
     </form>
-    <button ng-click="submitForm()">Submit</button>
 
+    <input type="radio" ng-model="kit" value="kit_2">Standard<br/>
+    <input type="radio" ng-model="kit" value="kit_1">8-Bit<br/>
+    <input type="radio" ng-model="kit" value="kit_3">Latin<br/>
+
+    </form>
+    <button ng-click="submitForm()">Submit</button>
+    <br/>
     <audio controls ng-src="{{audiopath}}" ng-show="audiopath">PlayBack</audio>
 </div>
 

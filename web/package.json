@@ -6,7 +6,7 @@
     "start": "node app.js"
   },
   "dependencies": {
-    "body-parser": "^1.10.1",
+    "body-parser": "^1.12.3",
     "express": "^4.0.0-rc4",
     "multer": "^0.1.8",
     "python-shell": "0.0.3"
