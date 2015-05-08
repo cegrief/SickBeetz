@@ -5,38 +5,74 @@
 
 <body>
 
-<div ng-controller="indexController">
-    <div>
-        <b>Record Audio in Your Browser </b><br/>
-        <button ng-click="record()">Record</button>
-        <button ng-click="stop()">Stop</button>
-        <br/>
-        <b ng-show="recorded">Audio Recorded, press submit to send to SickBeetz</b>
-        <br/>
-        <br/>
+<div ng-controller="indexController" class="container">
+    <div class = "page-header">
+        <h2>SickBeetz <small>Generating Beats by Beatboxing</small></h2>
     </div>
-    <p>OR</p>
-    <form method="post" enctype="multipart/form-data">
-        <label for="audio"><b>Select A File for input to SickBeetz</b></label><br><br>
-        <input type="file" name="audio" file-model="input"><br/><br/>
-    </form>
 
-    <input type="radio" ng-model="kit" value="kit_2">Standard<br/>
-    <input type="radio" ng-model="kit" value="kit_1">8-Bit<br/>
-    <input type="radio" ng-model="kit" value="kit_3">Latin<br/>
+    <div class = 'row'>
+        <div>
+            <h3>Step 1: Beatbox a Beat</h3>
+        </div>
+        <div class = 'col-xs-5'>
+            <h4>Record Audio in Your Browser:</h4><br/>
+            <div class="buttons">
+                <button class="btn btn-danger btn-lg" ng-hide="recording" tooltip="Record audio." tooltip-placement="bottom" ng-click="record()"><span class="glyphicon glyphicon-record"></span></button>
+                <button class="btn btn-danger btn-lg" ng-show="recording" tooltip="Stop Recording." tooltip-placement="bottom" ng-click="stop()"><span class="glyphicon glyphicon-stop"></span></button>
+                <button class="btn btn-primary btn-lg" ng-show="recorded && playaudio.paused" tooltip="Play Recorded Audio" tooltip-placement="bottom" ng-click="play()"><span class="glyphicon glyphicon-play"></span></button>
+                <button class="btn btn-primary btn-lg" ng-show="recorded && !playaudio.paused"  tooltip="Stop Playback" tooltip-placement="bottom" ng-click="stopaudio()"><span class="glyphicon glyphicon-stop"></span></button>
+            </div>
+            <br/>
+            <alert ng-repeat="alert in alerts" type="{{alert.type}}">{{alert.msg}}</alert>
+            <br/>
+            <br/>
+        </div>
+        <div class = 'col-xs-1'>
+            <h4 class = "text-center">OR</h4>
+        </div>
+        <div class = 'col-xs-5'>
+            <h4>Upload a File:</h4>
+            <form>
+                <input type="file" name="audio" file-model="input" onchange="angular.element(this).scope().recordedChange(this)"><br/><br/>
+            </form>
+        </div>
+    </div>
+    <div class = "row">
+        <div>
+            <h3>Step 2: Select a kit and Submit</h3>
+        </div>
+        <div class = "col-xs-5">
+            <div class="btn-group btn-group-justified">
+                <label class='btn btn-primary' ng-model="kit" btn-radio="'kit_2'">Standard</label>
+                <label class='btn btn-primary' ng-model="kit" btn-radio="'kit_1'">8-Bit</label>
+                <label class='btn btn-primary' ng-model="kit" btn-radio="'kit_3'">Latin</label>
+            </div>
+            <button class='btn btn-success' ng-click="submitForm()">Submit</button>
+        </div>
+    </div>
+    <div class="row" ng-show="submitted">
+        <div>
+            <h3>Step 3: Listen to your Sick Beat</h3>
+        </div>
+        <br/>
+        <progressbar value="100" class="progress-striped active" ng-hide="audiopath"></progressbar>
+        <audio controls ng-src="{{audiopath}}" ng-show="audiopath">PlayBack</audio>
+    </div>
 
-    </form>
-    <button ng-click="submitForm()">Submit</button>
-    <br/>
-    <audio controls ng-src="{{audiopath}}" ng-show="audiopath">PlayBack</audio>
+
 </div>
-
 
 <script src="/bower_components/angular/angular.js"></script>
 <script src="/bower_components/recorderjs/recorder.js"></script>
 <script src='/bower_components/angular-file-model/angular-file-model.js'></script>
+
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+<script src="js/ui-bootstrap-tpls-0.13.0.js"></script>
+
+<link rel="stylesheet" href="css/index.css">
 <script src="js/app.js"></script>
 <script src="js/controllers.js"></script>
+
 
 
 </body>
