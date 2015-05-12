@@ -23,11 +23,14 @@ angular.module('secrets.controllers', [])
             }).then(function(res){
                 console.log(res);
                 $scope.audiopath = res.data.path;
+            }, function(err){
+                console.log(err);
+                $scope.error = true
             });
         };
 
         $scope.record = function() {
-            $scope.recorded =false;
+            $scope.reset();
 
             // ask for permission and start recording
             navigator.getUserMedia({audio: true}, function(localMediaStream){
@@ -54,6 +57,7 @@ angular.module('secrets.controllers', [])
 
         $scope.stop = function() {
             $scope.recording = false;
+            $scope.srcType='record';
 
             $scope.alerts.splice(0);
             $scope.alerts.push({type: 'success', msg: 'Audio Recorded Successfully! Play it back to review, or select a Kit and Submit it to SickBeetz'});
@@ -88,7 +92,7 @@ angular.module('secrets.controllers', [])
         $scope.stopaudio = function(){
             $scope.playaudio.pause();
             $scope.playaudio.currentTime = 0;
-        }
+        };
 
         function blobToFile(theBlob, fileName){
             //A Blob() is almost a File() - it's just missing the two properties below which we will add
@@ -98,5 +102,21 @@ angular.module('secrets.controllers', [])
         }
 
         $scope.alerts = [];
+
+        $scope.reset = function(){
+            $scope.alerts=[];
+            $scope.error=false;
+            $scope.audiopath="";
+            $scope.submitted=false;
+            $scope.recorded=false;
+            $scope.input=undefined;
+            $scope.srcType=undefined;
+        };
+
+        $scope.filePicked = function(){
+            $scope.reset();
+            $scope.srcType = 'file';
+
+        }
 
     });
