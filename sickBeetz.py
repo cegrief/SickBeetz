@@ -10,7 +10,7 @@ import timeit
 
 
 def main(file_path, kit):
-    time, quantized, labels = quantize_and_classify(file_path, klassifier.load_classifier(), quantized)
+    time, quantized, labels = quantize_and_classify(file_path, klassifier.load_classifier(), False)
     print build_output(time, quantized, labels, kit, file_path, False)
 
 def timeMain(filename, kit):
