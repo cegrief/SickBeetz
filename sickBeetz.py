@@ -82,9 +82,10 @@ def quantize_and_classify(filename, model, quantized):
         labels.append(label)
 
     # quantize onset times to estimated tempo
-
-    #quantized_times = quantize_times(y, sr, times)
-    quantized_times = times
+    if quantized:
+        quantized_times = quantize_times(y, sr, times)
+    else:
+        quantized_times = times
 
     return (times, quantized_times, labels)
 
