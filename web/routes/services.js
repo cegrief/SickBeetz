@@ -10,10 +10,15 @@ module.exports = function (app) {
         PythonShell.run('sickBeetz.py', {args: [inp, kit], scriptPath:'../', pythonOptions: ['-W ignore']}, function(err, results){
             console.log(results);
             console.log(err);
-            var filename = inp.substring(0, inp.length - 4) + '-out.wav';
-            res.send({
-                path:filename
-            })
+            if(!err){
+                var filename = inp.substring(0, inp.length - 4) + '-out.wav';
+                res.send({
+                    path:filename
+                });
+            } else {
+                res.status(500).send({error: err})
+            }
+
         });
     });
 };
