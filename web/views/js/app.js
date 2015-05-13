@@ -1,5 +1,5 @@
 angular.module('sickBeetz', [
-    'secrets.controllers',
+    'sickBeetz.controllers',
     'file-model',
     'ui.bootstrap'
 ]);

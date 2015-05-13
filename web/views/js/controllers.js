@@ -1,4 +1,4 @@
-angular.module('secrets.controllers', [])
+angular.module('sickBeetz.controllers', [])
     .controller('indexController', function($scope, $http){
         var navigator = window.navigator;
         navigator.getUserMedia = (navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia);
@@ -10,7 +10,35 @@ angular.module('secrets.controllers', [])
 
         $scope.kit='kit_2';
 
+        var micVis = Object.create(WaveSurfer);
+        micVis.init({
+            container     : '#beatbox',
+            waveColor     : 'red',
+            interact      : false,
+            cursorWidth   : 0
+        });
+        var microphone = Object.create(WaveSurfer.Microphone);
+        microphone.init({
+            wavesurfer: micVis
+        });
+
+        $scope.inpVis = Object.create(WaveSurfer);
+        $scope.inpVis.init({
+            container:'#waveform',
+            waveColor:'grey',
+            progressColor:'black'
+
+        });
+
+        $scope.outVis = Object.create(WaveSurfer);
+        $scope.outVis.init({
+            container:'#outputWav',
+            wavecolor:'grey',
+            progressColor:'black'
+        });
+
         $scope.submitForm=function(){
+            $scope.error = false;
             var file = $scope.input;
             var fd = new FormData();
             fd.append('file', file);
@@ -23,6 +51,7 @@ angular.module('secrets.controllers', [])
             }).then(function(res){
                 console.log(res);
                 $scope.audiopath = res.data.path;
+                $scope.outVis.load(res.data.path);
             }, function(err){
                 console.log(err);
                 $scope.error = true
@@ -32,6 +61,9 @@ angular.module('secrets.controllers', [])
         $scope.record = function() {
             $scope.reset();
 
+            var input = angular.element(document.getElementById('fileupload'));
+            input.val(null);
+            microphone.start();
             // ask for permission and start recording
             navigator.getUserMedia({audio: true}, function(localMediaStream){
                 mediaStream = localMediaStream;
@@ -60,12 +92,13 @@ angular.module('secrets.controllers', [])
             $scope.srcType='record';
 
             $scope.alerts.splice(0);
-            $scope.alerts.push({type: 'success', msg: 'Audio Recorded Successfully! Play it back to review, or select a Kit and Submit it to SickBeetz'});
+            $scope.alerts.push({type: 'success', msg: 'Audio Recorded Successfully!'});
 
             // stop the media stream
             mediaStream.stop();
             // stop Recorder.js
             rec.stop();
+            microphone.stop();
 
             // export it to WAV
             rec.exportWAV(function(e){
@@ -82,17 +115,10 @@ angular.module('secrets.controllers', [])
                 $scope.input = blobToFile(e, 'input.wav');
                 $scope.recorded = true;
                 $scope.$apply();
+                $scope.inpVis.loadBlob($scope.input)
             });
         };
 
-        $scope.play = function(){
-            $scope.playaudio.play();
-        };
-
-        $scope.stopaudio = function(){
-            $scope.playaudio.pause();
-            $scope.playaudio.currentTime = 0;
-        };
 
         function blobToFile(theBlob, fileName){
             //A Blob() is almost a File() - it's just missing the two properties below which we will add
@@ -116,7 +142,16 @@ angular.module('secrets.controllers', [])
         $scope.filePicked = function(){
             $scope.reset();
             $scope.srcType = 'file';
+            $scope.$apply()
+        };
 
-        }
+        $scope.$watch('input',function(){
+            if($scope.input == undefined){
+                return
+            }
+            console.log($scope.input);
+            $scope.inpVis.loadBlob($scope.input);
+        });
+
 
     });
