@@ -49,6 +49,7 @@ def timeMain(filename, kit):
 
 
 def quantize_times(y, sr, times):
+    print 'quantizing'
     result = []
     if not times:
         return result
