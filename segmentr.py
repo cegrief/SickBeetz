@@ -9,6 +9,7 @@ import timeit
 
 HOP_LENGTH = 256
 SILENCE_STEP = 4096
+SILENCE_WINDOW = 2048
 SILENCE_THRESHOLD = .5
 MIN_SOUND_LEN = 0.02
 START_TIME = 0.5
@@ -53,23 +54,16 @@ def segment_audio_timeit(signal, sr):
 
     overalltime = timeit.default_timer()
     for i in range(len(onset_times)):
-        print('segment '+str(i)+': ')
-        start_time = timeit.default_timer()
-
         segment_start = onset_times[i]*sr
         if i != len(onset_times)-1:
             segment_end = (onset_times[i+1]*sr)-HOP_LENGTH
         else:
             segment_end = len(signal)-1
-        print('find_segment_end')
-        start_time_2 = timeit.default_timer()
         segment_end = find_segment_end(segment_start, segment_end, signal, silence_threshold)
-        print(timeit.default_timer()-start_time_2)
 
         if (segment_end - segment_start >= MIN_SOUND_LEN*sr) and (onset_times[i] > START_TIME)\
                 and (onset_times[i] < (len(signal)/sr-END_TIME)):
             segments.append((signal[segment_start: segment_end], onset_times[i]))
-        print(timeit.default_timer() - start_time)
 
     print('all segments')
     print(timeit.default_timer() - overalltime)
@@ -84,7 +78,7 @@ def get_silence_threshold(signal, sr):
 
 def find_segment_end(st, n, signal, silence_threshold):
     for i in xrange(int(st), int(n), SILENCE_STEP):
-        if rms(signal[i:i+SILENCE_STEP]) < silence_threshold:
+        if rms(signal[i:i+SILENCE_WINDOW]) < silence_threshold:
             return i
     return n
 

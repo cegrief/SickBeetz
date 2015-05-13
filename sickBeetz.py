@@ -33,17 +33,14 @@ def timeMain(filename, kit):
     times = [s[1] for s in segments]
     labels = []
     i = 1
-    overalltime = timeit.default_timer()
+    start_time = timeit.default_timer()
     for seg in samples:
-        start_time = timeit.default_timer()
         label = klassifier.use_classifier(model, seg)
         labels.append(label)
-        print("classifier"+ str(i) + ": " )
-        print(timeit.default_timer() - start_time)
         i += 1
 
     print("all classifications: ")
-    print(timeit.default_timer() - overalltime)
+    print(timeit.default_timer() - start_time)
 
     start_time = timeit.default_timer()
     quantized_times = quantize_times(y, sr, times)
@@ -70,7 +67,7 @@ def quantize_times(y, sr, times):
     return result
 
 
-def quantize_and_classify(filename, model, quantized):
+def quantize_and_classify(filename, model, quantized=False):
     # load and segment audio signal
     y, sr = librosa.load(filename, sr=None)
     segments = segmentr.segment_audio(y, sr)
