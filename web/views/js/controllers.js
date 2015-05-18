@@ -28,7 +28,6 @@ angular.module('sickBeetz.controllers', [])
             container:'#waveform',
             waveColor:'grey',
             progressColor:'black'
-
         });
 
         $scope.outVis = Object.create(WaveSurfer);

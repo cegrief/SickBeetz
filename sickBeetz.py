@@ -10,8 +10,8 @@ import timeit
 
 
 def main(file_path, kit):
-    time, quantized, labels = quantize_and_classify(file_path, klassifier.load_classifier(), False)
-    print build_output(time, quantized, labels, kit, file_path, False)
+    time, quantized, labels, inputLength = quantize_and_classify(file_path, klassifier.load_classifier(), False)
+    print build_output(time, quantized, labels, kit, file_path, inputLength, False)
 
 def timeMain(filename, kit):
     start_time = timeit.default_timer()
@@ -85,10 +85,10 @@ def quantize_and_classify(filename, model, quantized=False):
     else:
         quantized_times = times
 
-    return (times, quantized_times, labels)
+    return times, quantized_times, labels, len(y)
 
 
-def build_output(times, quantized_times, labels, kit, file_path, quantized=False):
+def build_output(times, quantized_times, labels, kit, file_path, inputLength, quantized=False):
     # check for empty arrays
     if not times or not labels:
         return False
@@ -106,9 +106,9 @@ def build_output(times, quantized_times, labels, kit, file_path, quantized=False
 
     # reconstruct signal from replaced sounds
     if quantized:
-        result = reconstructor.replace(quantized_times, drums, ssr)
+        result = reconstructor.replace(quantized_times, drums, ssr, inputLength)
     else:
-        result = reconstructor.replace(times, drums, ssr)
+        result = reconstructor.replace(times, drums, ssr, inputLength)
 
     # write output signal to .wav
     librosa.output.write_wav(file_path[:-4]+'-out.wav', result, ssr)
