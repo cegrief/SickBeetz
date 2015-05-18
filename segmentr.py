@@ -98,7 +98,7 @@ def main(argv):
         disp = False
     else:
         path = 'samples/beats/beat-1.wav'
-        disp = False
+        disp = True
     y, sr = librosa.load(path, sr=None)
     segments = segment_audio_timeit(y, sr)
 
