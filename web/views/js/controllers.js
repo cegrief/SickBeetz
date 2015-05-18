@@ -17,6 +17,7 @@ angular.module('sickBeetz.controllers', [])
             interact      : false,
             cursorWidth   : 0
         });
+
         var microphone = Object.create(WaveSurfer.Microphone);
         microphone.init({
             wavesurfer: micVis
@@ -63,9 +64,10 @@ angular.module('sickBeetz.controllers', [])
 
             var input = angular.element(document.getElementById('fileupload'));
             input.val(null);
-            microphone.start();
             // ask for permission and start recording
             navigator.getUserMedia({audio: true}, function(localMediaStream){
+
+                microphone.gotStream(localMediaStream);
                 mediaStream = localMediaStream;
 
                 // create a stream source to pass to Recorder.js
