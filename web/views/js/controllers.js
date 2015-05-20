@@ -1,5 +1,5 @@
 angular.module('sickBeetz.controllers', [])
-    .controller('indexController', function($scope, $http){
+    .controller('indexController', function($scope, $http, $modal){
         var navigator = window.navigator;
         navigator.getUserMedia = (navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia);
         var Context = window.AudioContext || window.webkitAudioContext;
@@ -84,7 +84,12 @@ angular.module('sickBeetz.controllers', [])
                 $scope.$apply();
                 rec.record();
             }, function(err){
-                console.log('Browser not supported');
+                console.log(err)
+                $modal.open({
+                    animation: true,
+                    templateUrl: 'err.html',
+                    controller:'modalctrl'
+                })
             });
         };
 
@@ -154,5 +159,17 @@ angular.module('sickBeetz.controllers', [])
             $scope.inpVis.loadBlob($scope.input);
         });
 
+        var modalInstance = $modal.open({
+            animation: true,
+            templateUrl: 'modal.html',
+            controller:'modalctrl'
+        })
 
+
+    });
+
+angular.module('sickBeetz.controllers').controller('modalctrl', function($scope, $modalInstance) {
+        $scope.close = function () {
+            $modalInstance.close();
+        };
     });
