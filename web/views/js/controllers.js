@@ -56,6 +56,10 @@ angular.module('sickBeetz.controllers', [])
                 console.log(res);
                 $scope.audiopath = res.data.path;
                 $scope.outVis.load(res.data.path);
+
+                $location.hash('step4');
+                $anchorScroll();
+
             }, function(err){
                 console.log(err);
                 $scope.error = true
@@ -161,6 +165,7 @@ angular.module('sickBeetz.controllers', [])
             $scope.reset();
             $scope.srcType = 'file';
             $scope.$apply()
+
         };
 
         $scope.$watch('input',function(){
@@ -169,6 +174,9 @@ angular.module('sickBeetz.controllers', [])
             }
             console.log($scope.input);
             $scope.inpVis.loadBlob($scope.input);
+
+            $location.path('step2');
+            $anchorScroll();
         });
 
         var modalInstance = $modal.open({
