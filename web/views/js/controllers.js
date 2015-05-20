@@ -1,5 +1,5 @@
 angular.module('sickBeetz.controllers', [])
-    .controller('indexController', function($scope, $http){
+    .controller('indexController', function($scope, $http, $modal, $anchorScroll, $location){
         var navigator = window.navigator;
         navigator.getUserMedia = (navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia);
         var Context = window.AudioContext || window.webkitAudioContext;
@@ -45,6 +45,10 @@ angular.module('sickBeetz.controllers', [])
             fd.append('kit', $scope.kit);
             $scope.audiopath = undefined;
             $scope.submitted = true;
+
+            //scroll to the appropriate part of the page
+            $scope.scrollTo('step3');
+
             $http.post('/sickBeetz',fd,{
                 transformReques: angular.identity,
                 headers: {'Content-Type':undefined}
@@ -84,7 +88,12 @@ angular.module('sickBeetz.controllers', [])
                 $scope.$apply();
                 rec.record();
             }, function(err){
-                console.log('Browser not supported');
+                console.log(err)
+                $modal.open({
+                    animation: true,
+                    templateUrl: 'err.html',
+                    controller:'modalctrl'
+                })
             });
         };
 
@@ -117,9 +126,17 @@ angular.module('sickBeetz.controllers', [])
                 $scope.recorded = true;
                 $scope.$apply();
                 $scope.inpVis.loadBlob($scope.input)
+
+                //scroll to the appropriate part of the page
+                $scope.scrollTo('step2')
+
             });
         };
 
+        $scope.scrollTo = function(id){
+            $location.hash(id);
+            $anchorScroll();
+        };
 
         function blobToFile(theBlob, fileName){
             //A Blob() is almost a File() - it's just missing the two properties below which we will add
@@ -154,5 +171,17 @@ angular.module('sickBeetz.controllers', [])
             $scope.inpVis.loadBlob($scope.input);
         });
 
+        var modalInstance = $modal.open({
+            animation: true,
+            templateUrl: 'modal.html',
+            controller:'modalctrl'
+        })
 
+
+    });
+
+angular.module('sickBeetz.controllers').controller('modalctrl', function($scope, $modalInstance) {
+        $scope.close = function () {
+            $modalInstance.close();
+        };
     });

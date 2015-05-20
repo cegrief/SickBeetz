@@ -9,13 +9,13 @@
 <div ng-controller="indexController" class="container">
 
     <div class = "page-header">
-        <h2>SickBeetz <small>Generating Beats by Beatboxing</small></h2><img class="headerimg" src="sick_beetz_banner.jpg"/>
+        <h2>SickBeetz <small>Generating Beats by Beatboxing    </small><img class="headerimg" src="sick_beetz_banner.jpg"/></h2>
     </div>
 
-    <div class = 'row'>
+    <div class = 'row' id="step1">
 
         <div>
-            <h3>Step 1: Beatbox a Beat</h3>
+            <h3>Step 1: Beatbox a Beat<br/><small class="subheading">Make sure there is at least 1 second of silence before beginning to beatbox</small></h3>
         </div>
         <div class = 'col-xs-5'>
             <h4>Record Audio in Your Browser:<span class="glyphicon glyphicon-ok" ng-show="srcType=='record'"></span></h4><br/>
@@ -37,7 +37,7 @@
             </form>
         </div>
     </div>
-    <div class ="row" ng-show="input">
+    <div class ="row" ng-show="input" id="step1.5">
         <div>
             <h3>Play back your audio</h3>
         </div>
@@ -48,6 +48,7 @@
         <button class="btn btn-primary btn-lg"  tooltip="Stop Playback" tooltip-placement="bottom" ng-click="inpVis.stop()"><span class="glyphicon glyphicon-stop"></span></button>
     </div>
     <div class = "row">
+        <a id='step2'></a>
         <div>
             <h3>Step 2: Select a kit and Submit</h3>
         </div>
@@ -60,7 +61,7 @@
             <button class='btn btn-success' ng-disabled="!input" ng-click="submitForm()">Submit</button>
         </div>
     </div>
-    <div class="row" ng-show="submitted">
+    <div class="row" ng-show="submitted" id="step3">
         <div>
             <h3>Step 3: Listen to your Sick Beat</h3>
         </div>
@@ -74,6 +75,7 @@
             <div id="outputWav"></div><br/>
             <button class="btn btn-primary btn-lg" tooltip="Play Audio" tooltip-placement="bottom" ng-click="outVis.play()"><span class="glyphicon glyphicon-play"></span></button>
             <button class="btn btn-primary btn-lg"  tooltip="Stop Playback" tooltip-placement="bottom" ng-click="outVis.stop()"><span class="glyphicon glyphicon-stop"></span></button>
+            <a class="btn btn-default btn-lg" href="{{audiopath}}" download><span class="glyphicon glyphicon-download-alt"></span>  Download Your Beat</a>
         </div>
         <alert ng-show="error" type="danger">Oops! Looks like something messed up on our end. Make sure your uploaded file is a .wav and try again <br/> Or <a href="mailto:cegrief@u.northwestern.edu">Contact Us</a> to report a bug</alert>
         <br/>
