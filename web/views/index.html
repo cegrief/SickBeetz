@@ -9,10 +9,10 @@
 <div ng-controller="indexController" class="container">
 
     <div class = "page-header">
-        <h2>SickBeetz <small>Generating Beats by Beatboxing</small></h2><img class="headerimg" src="sick_beetz_banner.jpg"/>
+        <h2>SickBeetz <small>Generating Beats by Beatboxing    </small><img class="headerimg" src="sick_beetz_banner.jpg"/></h2>
     </div>
 
-    <div class = 'row'>
+    <div class = 'row' id="step1">
 
         <div>
             <h3>Step 1: Beatbox a Beat</h3>
@@ -37,7 +37,7 @@
             </form>
         </div>
     </div>
-    <div class ="row" ng-show="input">
+    <div class ="row" ng-show="input" id="step1.5">
         <div>
             <h3>Play back your audio</h3>
         </div>
@@ -48,6 +48,7 @@
         <button class="btn btn-primary btn-lg"  tooltip="Stop Playback" tooltip-placement="bottom" ng-click="inpVis.stop()"><span class="glyphicon glyphicon-stop"></span></button>
     </div>
     <div class = "row">
+        <a id='step2'></a>
         <div>
             <h3>Step 2: Select a kit and Submit</h3>
         </div>
@@ -60,7 +61,7 @@
             <button class='btn btn-success' ng-disabled="!input" ng-click="submitForm()">Submit</button>
         </div>
     </div>
-    <div class="row" ng-show="submitted">
+    <div class="row" ng-show="submitted" id="step3">
         <div>
             <h3>Step 3: Listen to your Sick Beat</h3>
         </div>
