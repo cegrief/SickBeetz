@@ -1,6 +1,19 @@
 <html ng-app="sickBeetz">
 <head>
     <title>SickBeetz</title>
+
+    <script src="/bower_components/angular/angular.js"></script>
+    <script src="/bower_components/recorderjs/recorder.js"></script>
+    <script src='/bower_components/angular-file-model/angular-file-model.js'></script>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+    <script src="js/ui-bootstrap-tpls-0.13.0.js"></script>
+    <script src="js/wavesurfer-min.js"></script>
+    <script src="js/wavesurfer.microphone.js"></script>
+
+    <link rel="stylesheet" href="css/index.css">
+    <script src="js/app.js"></script>
+    <script src="js/controllers.js"></script>
 </head>
 
 <body>
@@ -47,8 +60,7 @@
         <button class="btn btn-primary btn-lg" tooltip="Play Recorded Audio" tooltip-placement="bottom" ng-click="inpVis.play()"><span class="glyphicon glyphicon-play"></span></button>
         <button class="btn btn-primary btn-lg"  tooltip="Stop Playback" tooltip-placement="bottom" ng-click="inpVis.stop()"><span class="glyphicon glyphicon-stop"></span></button>
     </div>
-    <div class = "row">
-        <a id='step2'></a>
+    <div class = "row" id="step2">
         <div>
             <h3>Step 2: Select a kit and Submit</h3>
         </div>
@@ -71,8 +83,7 @@
             <p>Processing....</p>
             <p>Your Beat is very important to us</p>
         </div>
-        <div ng-show="audiopath">
-            <a id="step4"></a>
+        <div ng-show="audiopath" id="step4">
             <div id="outputWav"></div><br/>
             <button class="btn btn-primary btn-lg" tooltip="Play Audio" tooltip-placement="bottom" ng-click="outVis.play()"><span class="glyphicon glyphicon-play"></span></button>
             <button class="btn btn-primary btn-lg"  tooltip="Stop Playback" tooltip-placement="bottom" ng-click="outVis.stop()"><span class="glyphicon glyphicon-stop"></span></button>
@@ -83,22 +94,5 @@
         <br/>
     </div>
 </div>
-
-<script src="/bower_components/angular/angular.js"></script>
-<script src="/bower_components/recorderjs/recorder.js"></script>
-<script src='/bower_components/angular-file-model/angular-file-model.js'></script>
-
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
-<script src="js/ui-bootstrap-tpls-0.13.0.js"></script>
-<script src="js/wavesurfer-min.js"></script>
-<script src="js/wavesurfer.microphone.js"></script>
-
-<link rel="stylesheet" href="css/index.css">
-<script src="js/app.js"></script>
-<script src="js/controllers.js"></script>
-
-
-
 </body>
-
 </html>

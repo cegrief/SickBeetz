@@ -1,5 +1,5 @@
 angular.module('sickBeetz.controllers', [])
-    .controller('indexController', function($scope, $http, $modal, $anchorScroll, $location){
+    .controller('indexController', function($scope, $http, $modal, $anchorScroll, $location, $timeout){
         var navigator = window.navigator;
         navigator.getUserMedia = (navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia);
         var Context = window.AudioContext || window.webkitAudioContext;
@@ -129,7 +129,7 @@ angular.module('sickBeetz.controllers', [])
                 $scope.input = blobToFile(e, 'input.wav');
                 $scope.recorded = true;
                 $scope.$apply();
-                $scope.inpVis.loadBlob($scope.input)
+                $scope.inpVis.loadBlob($scope.input);
 
                 //scroll to the appropriate part of the page
                 $scope.scrollTo('step2')
@@ -164,19 +164,14 @@ angular.module('sickBeetz.controllers', [])
         $scope.filePicked = function(){
             $scope.reset();
             $scope.srcType = 'file';
-            $scope.$apply()
-
         };
 
         $scope.$watch('input',function(){
             if($scope.input == undefined){
                 return
             }
-            console.log($scope.input);
             $scope.inpVis.loadBlob($scope.input);
-
-            $location.path('step2');
-            $anchorScroll();
+            $timeout(function(){$scope.scrollTo('step2')});
         });
 
         var modalInstance = $modal.open({
@@ -188,6 +183,7 @@ angular.module('sickBeetz.controllers', [])
 
     });
 
+//controller for the modal instance
 angular.module('sickBeetz.controllers').controller('modalctrl', function($scope, $modalInstance) {
         $scope.close = function () {
             $modalInstance.close();
