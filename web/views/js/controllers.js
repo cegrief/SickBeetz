@@ -3,7 +3,17 @@ angular.module('sickBeetz.controllers', [])
         var navigator = window.navigator;
         navigator.getUserMedia = (navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia);
         var Context = window.AudioContext || window.webkitAudioContext;
+
+        if(!Context){
+            $modal.open({
+                animation: true,
+                templateUrl: 'err.html',
+                controller:'modalctrl'
+            })
+        }
+
         var context = new Context();
+        console.log('asdf')
 
         var mediaStream;
         var rec;
@@ -185,7 +195,7 @@ angular.module('sickBeetz.controllers', [])
 
 //controller for the modal instance
 angular.module('sickBeetz.controllers').controller('modalctrl', function($scope, $modalInstance) {
-        $scope.close = function () {
-            $modalInstance.close();
-        };
-    });
+    $scope.close = function () {
+        $modalInstance.close();
+    };
+});
