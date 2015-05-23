@@ -138,7 +138,6 @@ angular.module('sickBeetz.controllers', [])
         };
 
         $scope.scrollTo = function(id){
-            console.log('scrolling');
             $location.hash(id);
             $anchorScroll();
         };
