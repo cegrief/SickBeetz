@@ -4,7 +4,7 @@ angular.module('sickBeetz.controllers', [])
         navigator.getUserMedia = (navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia);
         var Context = window.AudioContext || window.webkitAudioContext;
 
-        if(!Context){
+        if(!Context || !navigator.getUserMedia){
             $modal.open({
                 animation: true,
                 templateUrl: 'err.html',
@@ -13,7 +13,6 @@ angular.module('sickBeetz.controllers', [])
         }
 
         var context = new Context();
-        console.log('asdf')
 
         var mediaStream;
         var rec;
@@ -29,6 +28,7 @@ angular.module('sickBeetz.controllers', [])
         });
 
         var microphone = Object.create(WaveSurfer.Microphone);
+
         microphone.init({
             wavesurfer: micVis
         });
