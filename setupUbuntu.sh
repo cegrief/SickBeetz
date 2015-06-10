@@ -31,9 +31,10 @@ update(){
 	} 1> /dev/null
 }
 
-node(){
-  if hash node 2>/dev/null; then
-	printf "\n Node already installed \n"
+nodeInstall(){
+
+  if type node 2>/dev/null; then
+    printf "\n Node already installed \n"
   else
     {
        curl -sL https://deb.nodesource.com/setup | sudo bash -
@@ -103,7 +104,7 @@ update & spinner $!
 printf " done\n"
 
 printf "\nInstalling node...\n"
-node & spinner $!
+nodeInstall & spinner $!
 printf " done\n"
 
 printf "\nInstalling dependencies...\n"
@@ -127,4 +128,4 @@ printf " done\n"
 printf "\nSick Beetz has been succesfully installed."
 printf "\nStart the app by naviagting to the web folder\n"
 printf "\nAnd inputting 'pm2 start app.js'\n"
-printf "\nView the Wiki for more information"
+printf "\nView the Wiki for more information\n"
