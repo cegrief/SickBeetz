@@ -29,7 +29,7 @@ update(){
 	} 1> /dev/null
 }
 
-node(){
+nodeInstall(){
   if hash node 2>/dev/null; then
     printf "\n Node already installed \n"
   else
@@ -102,7 +102,7 @@ update & spinner $!
 printf " done\n"
 
 printf "\nInstalling node...\n"
-node & spinner $!
+nodeInstall & spinner $!
 printf " done\n"
 
 printf "\nInstalling dependencies...\n"
