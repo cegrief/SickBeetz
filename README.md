@@ -13,6 +13,8 @@ The user may [visit SickBeetz on the web](http://www.sickbeetz.com), or can lauc
 ```
 python sickBeetz.py [path to audio file] [kit_#]
 ```
+further installation instructions can be found at [The Wiki](https://github.com/cegrief/SickBeetz/wiki/SickBeetz-Wiki)
+
 At the home screen, the user may press the record button and begin beatboxing into the system's microphone. They can then press the stop button when they are finished recording. Alternatively, they are able to upload an audio file for processing.
 
 The interface will then prompt the user to select their preferred of three drum kits. The user may subsequently press the play button to hear the result or download it for later.
