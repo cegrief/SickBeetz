@@ -98,10 +98,6 @@ forward(){
   }
 }
 
-startit(){
-  sudo -u ${SUDO_USER:-$USER} pm2 start app.js 
-}
-
 printf "\nUpdating system...\n"
 update & spinner $!
 printf " done\n"
