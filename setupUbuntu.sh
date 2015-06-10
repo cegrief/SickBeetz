@@ -32,10 +32,14 @@ update(){
 }
 
 node(){
-  {
-     curl -sL https://deb.nodesource.com/setup | sudo bash -
-     apt-get -y install nodejs
-  } 1> /dev/null
+  if hash node 2>/dev/null; then
+	printf "\n Node already installed \n"
+  else
+    {
+       curl -sL https://deb.nodesource.com/setup | sudo bash -
+       apt-get -y install nodejs
+    } 1> /dev/null
+  fi
 }
 
 dependencies(){
@@ -50,16 +54,27 @@ dependencies(){
 }
 
 mini(){
-
-  if [ `uname -m` == 'x86_64' ]
-  then
-  {
-     curl https://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh -o ~/miniconda.sh
-  } &> /dev/null
+  if [ -f /home/${SUDO_USER:-$USER}/miniconda/bin/conda ]; then
+	printf "\n Miniconda already installed\n"
   else
-  {
-     curl https://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86.sh -o ~/miniconda.sh
-  } &> /dev/null
+    if [ `uname -m` == 'x86_64' ]
+    then
+    {
+       curl https://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh -o ~/miniconda.sh
+    } &> /dev/null
+    else
+    {
+       curl https://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86.sh -o ~/miniconda.sh
+    } &> /dev/null
+    fi
+  fi
+}
+
+installmini(){
+  if [ -f /home/${SUDO_USER:-$USER}/miniconda/bin/conda ]; then
+	printf "\nMiniconda Already Installed\n"
+  else
+	bash ~/miniconda.sh
   fi
 }
 
@@ -84,7 +99,7 @@ forward(){
 }
 
 startit(){
-  sudo -u ${SUDO_USER:-$USER} pm2 start app.js -f
+  sudo -u ${SUDO_USER:-$USER} pm2 start app.js 
 }
 
 printf "\nUpdating system...\n"
@@ -99,9 +114,10 @@ printf "\nInstalling dependencies...\n"
 dependencies
 printf " done\n"
 
-printf "\nInstalling Miniconda...\n"
+printf "\nDownloading Miniconda...\n"
 mini & spinner $!
-bash ~/miniconda.sh
+printf "\nInstalling Miniconda...\n"
+installmini
 printf " done\n"
 
 printf "\nInstalling Python Packages...\n"
@@ -112,10 +128,7 @@ printf "\nForwarding Ports...\n"
 forward & spinner $!
 printf " done\n"
 
-printf "\nStarting App in the background...\n"
-startit & spinner $!
-printf " done\n"
-
 printf "\nSick Beetz has been succesfully installed."
-printf "\nYou may stop the app at anytime by typing pm2 stop 0\n"
-printf "\nView the readme for more information"
+printf "\nStart the app by naviagting to the web folder\n"
+printf "\nAnd inputting 'pm2 start app.js'\n"
+printf "\nView the Wiki for more information"
