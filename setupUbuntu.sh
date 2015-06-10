@@ -26,6 +26,8 @@ update(){
 		apt-get -y install gcc
 		apt-get -y install libsm6
 		apt-get -y install bzip2
+		apt-get -y install libxrender1
+		
 	} 1> /dev/null
 }
 
