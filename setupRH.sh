@@ -24,6 +24,8 @@ update(){
  		yum -y update
  		yum -y install wget
 		yum -y install gcc
+		yum -y install libSM
+		yum -y install bzip2
 	} 1> /dev/null
 }
 
@@ -57,10 +59,6 @@ mini(){
      wget https://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86.sh -O ~/miniconda.sh
   } &> /dev/null
   fi
-
-  {
-     yum install bzip2 -y 
-  } 1> /dev/null
 }
 
 pydepends(){
@@ -70,8 +68,7 @@ pydepends(){
      /home/${SUDO_USER:-$USER}/miniconda/bin/conda install scipy
      /home/${SUDO_USER:-$USER}/miniconda/bin/conda install matplotlib
      /home/${SUDO_USER:-$USER}/miniconda/bin/conda install scikit-learn
-     yum install –y libSM
-     /home/${SUDO_USER:-$USER}/miniconda/bin/pip install librosa
+     /home/${SUDO_USER:-$USER}/miniconda/bin/pip install librosa==0.3.1
 
   } 1> /dev/null
 }
@@ -85,7 +82,7 @@ forward(){
 }
 
 startit(){
-  pm2 start app.js
+  pm2 start app.js -f
 }
 
 printf "\nUpdating system...\n"

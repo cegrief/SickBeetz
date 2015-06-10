@@ -70,7 +70,7 @@ pydepends(){
      /home/${SUDO_USER:-$USER}/miniconda/bin/conda install scipy
      /home/${SUDO_USER:-$USER}/miniconda/bin/conda install matplotlib
      /home/${SUDO_USER:-$USER}/miniconda/bin/conda install scikit-learn
-     /home/${SUDO_USER:-$USER}/miniconda/bin/pip install librosa
+     /home/${SUDO_USER:-$USER}/miniconda/bin/pip install librosa==0.3.1
 
   } 1> /dev/null
 }
@@ -84,7 +84,7 @@ forward(){
 }
 
 startit(){
-  pm2 start app.js -f
+  sudo -u ${SUDO_USER:-$USER} pm2 start app.js -f
 }
 
 printf "\nUpdating system...\n"
