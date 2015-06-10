@@ -1,7 +1,0 @@
-librosa
-numpy
-scipy
-matplotlib
-scikit-learn
-IPython
-pyaudio
