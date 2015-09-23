@@ -8,6 +8,8 @@ Professor Bryan Pardo
 ###Overview
 Analyzes recordings of humans beatboxing and transforms them into electronic drum beats. Does so by segmenting, classifying, quantizing, and replacing individual percussive 'notes' from a user-input audio stream. Written in Python 2.7 with the SciPy stack.
 
+[Read more about the project](https://sickbeetz.wordpress.com/)
+
 ####Running the Program
 The user may [visit SickBeetz on the web](http://www.sickbeetz.com), or can lauch SickBeetz from the command line:
 ```
