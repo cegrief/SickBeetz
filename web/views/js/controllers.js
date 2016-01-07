@@ -119,7 +119,7 @@ angular.module('sickBeetz.controllers', [])
             $scope.alerts.push({type: 'success', msg: 'Audio Recorded Successfully!'});
 
             // stop the media stream
-            mediaStream.stop();
+            mediaStream.getTracks()[0].stop();
             // stop Recorder.js
             rec.stop();
             microphone.stop();

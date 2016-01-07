@@ -88,7 +88,7 @@
                 this.active = false;
 
                 if (this.stream) {
-                    this.stream.stop();
+                    this.stream.getTracks()[0].stop();
                 }
                 this.disconnect();
                 this.wavesurfer.empty();
