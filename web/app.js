@@ -14,6 +14,13 @@ var app = express();
 
 app.set('port', 5000);
 
+function requireHTTPS(req,res,next) {
+  if (!req.secure) {
+    return res.redirect('https://' + req.get('host') + req.url);
+  }
+  next();
+}
+app.use(requireHTTPS);
 
 app.use(express.static(path.join(__dirname, '/views/')));
 app.use('/bower_components', express.static(__dirname + '/bower_components'));
