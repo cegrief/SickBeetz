@@ -1,26 +1,13 @@
 var express = require('express');
 var multer = require('multer');
 var http = require('http');
-var https = require('https');
 var path = require('path');
 var bodyParser = require('body-parser');
 var fs = require('fs');
 
-var privateKey  = fs.readFileSync('sslcert/private-key.pem', 'utf8');
-var certificate = fs.readFileSync('sslcert/www_sickbeetz_com.crt', 'utf8');
-var credentials = {key: privateKey, cert: certificate};
-
 var app = express();
 
-app.set('port', 5000);
-
-function requireHTTPS(req,res,next) {
-  if (!req.secure) {
-    return res.redirect('https://' + req.get('host') + req.url);
-  }
-  next();
-}
-app.use(requireHTTPS);
+app.set('port', 80);
 
 app.use(express.static(path.join(__dirname, '/views/')));
 app.use('/bower_components', express.static(__dirname + '/bower_components'));
@@ -41,8 +28,4 @@ require('./routes/services')(app);
 
 http.createServer(app).listen(app.get('port'), function () {
   console.log('Express server listening on port ' + app.get('port'));
-});
-
-https.createServer(credentials, app).listen(4443, function (){
-  console.log('HTTPS server listening on 4443');
 });
