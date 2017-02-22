@@ -184,11 +184,13 @@ angular.module('sickBeetz.controllers', [])
             $timeout(function(){$scope.scrollTo('step2')});
         });
 
-        var modalInstance = $modal.open({
-            animation: true,
-            templateUrl: 'modal.html',
-            controller:'modalctrl'
-        })
+        // Un-comment this to restore modal:
+
+        // var modalInstance = $modal.open({
+        //     animation: true,
+        //     templateUrl: 'modal.html',
+        //     controller:'modalctrl'
+        // })
 
 
     });
